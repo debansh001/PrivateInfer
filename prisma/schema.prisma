@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum QueryStatus {
+  PENDING
+  PROCESSING
+  RESULT_READY
+  PAID
+  FAILED
+}
+
+model Provider {
+  id         String   @id @default(cuid())
+  name       String
+  modelHash  String   @unique
+  queries    Query[]
+  createdAt  DateTime @default(now())
+}
+
+model Query {
+  id             String      @id @default(cuid())
+  providerId     String
+  provider       Provider    @relation(fields: [providerId], references: [id])
+  status         QueryStatus @default(PENDING)
+  commitmentHash String?
+  reward         String
+  result         Result?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model Result {
+  id            String   @id @default(cuid())
+  queryId       String   @unique
+  query         Query    @relation(fields: [queryId], references: [id])
+  decryptedData String
+  proofHash     String
+  createdAt     DateTime @default(now())
+}
