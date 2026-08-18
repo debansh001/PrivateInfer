@@ -4,10 +4,50 @@
   "runtime-version": "0.16.0",
   "circuits": [
     {
+      "name": "createQuery",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "queryId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "commitment",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
+        {
+          "name": "providerAddr",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
       "name": "submitResult",
       "pure": false,
       "proof": true,
       "arguments": [
+        {
+          "name": "queryId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        },
         {
           "name": "resultProofHash",
           "type": {
@@ -27,6 +67,32 @@
       "pure": false,
       "proof": true,
       "arguments": [
+        {
+          "name": "queryId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
+      ],
+      "result-type": {
+        "type-name": "Tuple",
+        "types": [
+        ]
+      }
+    },
+    {
+      "name": "cancelQuery",
+      "pure": false,
+      "proof": true,
+      "arguments": [
+        {
+          "name": "queryId",
+          "type": {
+            "type-name": "Bytes",
+            "length": 32
+          }
+        }
       ],
       "result-type": {
         "type-name": "Tuple",
@@ -50,48 +116,61 @@
   ],
   "ledger": [
     {
-      "name": "commitmentHash",
+      "name": "queries",
       "index": 0,
       "exported": true,
-      "storage": "Cell",
-      "type": {
+      "storage": "Map",
+      "key": {
         "type-name": "Bytes",
         "length": 32
-      }
-    },
-    {
-      "name": "resultHash",
-      "index": 1,
-      "exported": true,
-      "storage": "Cell",
-      "type": {
-        "type-name": "Bytes",
-        "length": 32
-      }
-    },
-    {
-      "name": "status",
-      "index": 2,
-      "exported": true,
-      "storage": "Cell",
-      "type": {
-        "type-name": "Enum",
-        "name": "QueryStatus",
+      },
+      "value": {
+        "type-name": "Struct",
+        "name": "Query",
         "elements": [
-          "PROCESSING",
-          "RESULT_READY",
-          "PAID"
+          {
+            "name": "creator",
+            "type": {
+              "type-name": "Bytes",
+              "length": 32
+            }
+          },
+          {
+            "name": "provider",
+            "type": {
+              "type-name": "Bytes",
+              "length": 32
+            }
+          },
+          {
+            "name": "commitmentHash",
+            "type": {
+              "type-name": "Bytes",
+              "length": 32
+            }
+          },
+          {
+            "name": "resultHash",
+            "type": {
+              "type-name": "Bytes",
+              "length": 32
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "type-name": "Enum",
+              "name": "QueryStatus",
+              "elements": [
+                "UNKNOWN",
+                "PROCESSING",
+                "RESULT_READY",
+                "PAID",
+                "CANCELLED"
+              ]
+            }
+          }
         ]
-      }
-    },
-    {
-      "name": "providerAddr",
-      "index": 3,
-      "exported": true,
-      "storage": "Cell",
-      "type": {
-        "type-name": "Bytes",
-        "length": 32
       }
     }
   ]
