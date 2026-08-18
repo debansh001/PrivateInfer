@@ -2,37 +2,104 @@ pragma language_version >= 0.22;
 
 import CompactStandardLibrary;
 
-export enum QueryStatus { PROCESSING, RESULT_READY, PAID }
+export enum QueryStatus { UNKNOWN, PROCESSING, RESULT_READY, PAID, CANCELLED }
 
-export ledger commitmentHash: Bytes<32>;
-export ledger resultHash: Bytes<32>;
-export ledger status: QueryStatus;
-export ledger providerAddr: Bytes<32>;
+export struct Query {
+  creator: Bytes<32>;
+  provider: Bytes<32>;
+  commitmentHash: Bytes<32>;
+  resultHash: Bytes<32>;
+  status: QueryStatus;
+}
+
+export ledger queries: Map<Bytes<32>, Query>;
 
 witness callerAddress(): Bytes<32>;
 
-constructor(commitment: Bytes<32>, provider: Bytes<32>) {
-  commitmentHash = disclose(commitment);
-  providerAddr = disclose(provider);
-  status = QueryStatus.PROCESSING;
-  resultHash = pad(32, "");
+constructor() {}
+
+export circuit createQuery(queryId: Bytes<32>, commitment: Bytes<32>, providerAddr: Bytes<32>): [] {
+  const pubQueryId = disclose(queryId);
+  assert(!queries.member(pubQueryId), "Query ID already exists");
+  
+  const caller = callerAddress();
+  
+  const newQuery = Query {
+    creator: disclose(caller),
+    provider: disclose(providerAddr),
+    commitmentHash: disclose(commitment),
+    resultHash: pad(32, ""),
+    status: QueryStatus.PROCESSING
+  };
+  
+  queries.insert(pubQueryId, newQuery);
 }
 
-export circuit submitResult(resultProofHash: Bytes<32>): [] {
-  assert(status == QueryStatus.PROCESSING, "Query not processing");
+export circuit submitResult(queryId: Bytes<32>, resultProofHash: Bytes<32>): [] {
+  const pubQueryId = disclose(queryId);
+  assert(queries.member(pubQueryId), "Query ID does not exist");
+  const query = queries.lookup(pubQueryId);
+  
+  assert(query.status == QueryStatus.PROCESSING, "Query not in PROCESSING state");
   
   // Only the assigned provider can submit result
   const caller = callerAddress();
-  assert(caller == providerAddr, "Not assigned provider");
+  assert(disclose(caller) == query.provider, "Not assigned provider");
   
-  resultHash = disclose(resultProofHash);
-  status = QueryStatus.RESULT_READY;
+  // Update query state
+  const updatedQuery = Query {
+    creator: query.creator,
+    provider: query.provider,
+    commitmentHash: query.commitmentHash,
+    resultHash: disclose(resultProofHash),
+    status: QueryStatus.RESULT_READY
+  };
+  
+  queries.insert(pubQueryId, updatedQuery);
 }
 
-export circuit releasePayment(): [] {
-  assert(status == QueryStatus.RESULT_READY, "Result not ready");
+export circuit releasePayment(queryId: Bytes<32>): [] {
+  const pubQueryId = disclose(queryId);
+  assert(queries.member(pubQueryId), "Query ID does not exist");
+  const query = queries.lookup(pubQueryId);
+  
+  assert(query.status == QueryStatus.RESULT_READY, "Result not ready");
+  
+  // Only creator can release payment
+  const caller = callerAddress();
+  assert(disclose(caller) == query.creator, "Not the creator");
   
   // In a real implementation this would transfer tokens to providerAddr.
-  // For Phase 1, we just update the status flag.
-  status = QueryStatus.PAID;
+  // We update the status flag to represent the escrow being released.
+  const updatedQuery = Query {
+    creator: query.creator,
+    provider: query.provider,
+    commitmentHash: query.commitmentHash,
+    resultHash: query.resultHash,
+    status: QueryStatus.PAID
+  };
+  
+  queries.insert(pubQueryId, updatedQuery);
+}
+
+export circuit cancelQuery(queryId: Bytes<32>): [] {
+  const pubQueryId = disclose(queryId);
+  assert(queries.member(pubQueryId), "Query ID does not exist");
+  const query = queries.lookup(pubQueryId);
+  
+  assert(query.status == QueryStatus.PROCESSING, "Can only cancel PROCESSING queries");
+  
+  // Only creator can cancel
+  const caller = callerAddress();
+  assert(disclose(caller) == query.creator, "Not the creator");
+  
+  const updatedQuery = Query {
+    creator: query.creator,
+    provider: query.provider,
+    commitmentHash: query.commitmentHash,
+    resultHash: query.resultHash,
+    status: QueryStatus.CANCELLED
+  };
+  
+  queries.insert(pubQueryId, updatedQuery);
 }
