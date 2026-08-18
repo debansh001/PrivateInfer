@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars, react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars */
 // @ts-nocheck
 "use client";
 
@@ -59,7 +59,7 @@ export default function ProviderDashboard() {
     fetch("/api/queries")
       .then(res => res.json())
       .then((data: DBQuery[]) => {
-        setQueries(data.map(q => ({ ...q, chainStatus: "UNKNOWN", isPolling: true })));
+        setQueries(data.map(q => ({ ...q, chainStatus: "PROCESSING", isPolling: false })));
         setIsLoading(false);
       })
       .catch(e => {
@@ -67,13 +67,6 @@ export default function ProviderDashboard() {
         setIsLoading(false);
       });
   }, []);
-
-  // Polling the chain for Map values is complex in Midnight JS without a dedicated indexer.
-  // For the hackathon demo, we rely on the optimistic updates below when the provider interacts with the query.
-  useEffect(() => {
-    if (!session || !isConnected || queries.length === 0) return;
-    setQueries(queries.map(q => ({ ...q, chainStatus: q.chainStatus === "UNKNOWN" ? "PROCESSING" : q.chainStatus })));
-  }, [session, isConnected, queries.length]);
 
   const handleSubmitResult = async (queryIdHex: string) => {
     if (!session) return;

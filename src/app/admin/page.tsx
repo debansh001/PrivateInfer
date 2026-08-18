@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -7,7 +8,6 @@ import { createUnprovenDeployTx, submitTxAsync } from '@midnight-ntwrk/midnight-
 import { sampleSigningKey } from '@midnight-ntwrk/compact-runtime';
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
 
-// @ts-expect-error Types mismatch for keys in different Midnight SDK versions
 import { Contract } from '../../../contracts/managed/privateinfer/contract/index.js';
 
 export default function AdminPage() {
@@ -27,7 +27,7 @@ export default function AdminPage() {
     if (!session) return;
     try {
       const deployTxData = await createUnprovenDeployTx(
-        session.providers,
+        session.providers as any,
         { 
           compiledContract: getCompiledContract(), 
           args: [], 
