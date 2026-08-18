@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Network, Shield } from "lucide-react";
+import Image from "next/image";
+import { Network } from "lucide-react";
 import WalletConnect from "./WalletConnect";
 
 export function Header() {
@@ -9,7 +10,7 @@ export function Header() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center space-x-2">
             <div className="bg-accent-primary/10 p-1.5 rounded-md border border-accent-primary/20">
-              <Shield className="w-5 h-5 text-accent-primary" />
+              <Image src="/logo.png" alt="PrivateInfer Logo" width={24} height={24} className="w-5 h-5 object-contain" />
             </div>
             <span className="font-display font-bold text-xl tracking-tight">PrivateInfer</span>
           </Link>

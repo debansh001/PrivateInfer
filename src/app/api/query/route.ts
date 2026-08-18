@@ -3,20 +3,20 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   try {
-    const { providerId, contractAddress } = await req.json();
+    const { providerId, queryId } = await req.json();
 
-    if (!providerId || !contractAddress) {
+    if (!providerId || !queryId) {
       return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
     }
 
-    // Write to DB so the Provider Dashboard can find the contract
+    // Write to DB so the Provider Dashboard can find the query
     const query = await prisma.query.create({
       data: {
-        id: contractAddress, // Use contract address as the ID
+        id: queryId, // Use queryId as the ID
         providerId,
         status: "PROCESSING",
         reward: "5 tDUST",
-        commitmentHash: contractAddress, // Just a placeholder
+        commitmentHash: queryId, // Just a placeholder
       },
     });
 

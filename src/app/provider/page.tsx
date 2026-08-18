@@ -14,7 +14,19 @@ import { createUnprovenCallTx, submitTxAsync } from '@midnight-ntwrk/midnight-js
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
 
 // @ts-expect-error Types mismatch for keys in different Midnight SDK versions
+// @ts-expect-error Types mismatch for keys in different Midnight SDK versions
 import { Contract } from '../../../contracts/managed/privateinfer/contract/index.js';
+
+function coinPublicKeyToBytes(pk: string | Uint8Array): Uint8Array {
+  if (!pk) return new Uint8Array(32);
+  const hex = typeof pk === 'string' ? pk : Array.from(pk as unknown as number[]).map((b) => b.toString(16).padStart(2, '0')).join('');
+  const bytes = new Uint8Array(32);
+  for (let i = 0; i < 32; i++) {
+    const val = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+    bytes[i] = isNaN(val) ? 0 : val;
+  }
+  return bytes;
+}
 
 type DBQuery = {
   id: string; // The contract address
@@ -34,9 +46,11 @@ export default function ProviderDashboard() {
   
   const { isConnected, session, connect } = useWallet();
 
-  const getCompiledContract = () => {
+  const getCompiledContract = (pkBytes: Uint8Array) => {
     return CompiledContract.make('privateinfer', Contract).pipe(
-      CompiledContract.withVacantWitnesses,
+      CompiledContract.withWitnesses({
+        callerAddress: (context: any) => [context.state, pkBytes]
+      }),
       CompiledContract.withCompiledFileAssets('/zk/privateinfer'),
     ) as any;
   };
@@ -54,60 +68,42 @@ export default function ProviderDashboard() {
       });
   }, []);
 
-  // Poll on-chain state for all active queries
+  // Polling the chain for Map values is complex in Midnight JS without a dedicated indexer.
+  // For the hackathon demo, we rely on the optimistic updates below when the provider interacts with the query.
   useEffect(() => {
     if (!session || !isConnected || queries.length === 0) return;
-
-    const pollStates = async () => {
-      let updated = false;
-      const nextQueries = [...queries];
-
-      for (let i = 0; i < nextQueries.length; i++) {
-        const q = nextQueries[i];
-        if (!q.isPolling) continue;
-
-        try {
-          const stateData = await session.providers.publicDataProvider.queryContractState(q.id);
-          if (stateData && stateData.data) {
-            const ledger = Contract.ledger(stateData.data);
-            if (ledger.status && ledger.status !== q.chainStatus) {
-              q.chainStatus = ledger.status;
-              if (ledger.status === "PAID") q.isPolling = false;
-              updated = true;
-            }
-          }
-        } catch (e) {
-          // Ignored, indexer might not have it yet or it errored
-        }
-      }
-
-      if (updated) setQueries(nextQueries);
-      setTimeout(pollStates, 4000);
-    };
-
-    const timerId = setTimeout(pollStates, 1000);
-    return () => clearTimeout(timerId);
+    setQueries(queries.map(q => ({ ...q, chainStatus: q.chainStatus === "UNKNOWN" ? "PROCESSING" : q.chainStatus })));
   }, [session, isConnected, queries.length]);
 
-  const handleSubmitResult = async (contractAddress: string) => {
+  const handleSubmitResult = async (queryIdHex: string) => {
     if (!session) return;
-    setProcessingId(contractAddress);
+    setProcessingId(queryIdHex);
     try {
       // Generate a mock result proof hash
       const resultBuffer = new Uint8Array(32);
       crypto.getRandomValues(resultBuffer);
 
-      const callTxData = await createUnprovenCallTx(session.providers, {
-        compiledContract: getCompiledContract(),
+      const pkBytes = coinPublicKeyToBytes(session.providers.walletProvider.getCoinPublicKey());
+
+      const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
+      if (!contractAddress) throw new Error("Marketplace address not set in .env.local! Please complete Admin Setup.");
+
+      const queryIdBuffer = new Uint8Array(32);
+      for (let i = 0; i < 32; i++) {
+        queryIdBuffer[i] = parseInt(queryIdHex.slice(i * 2, i * 2 + 2), 16);
+      }
+
+      const callTxData = await createUnprovenCallTx(session.providers as any, {
+        compiledContract: getCompiledContract(pkBytes),
         contractAddress,
         circuitId: 'submitResult',
-        args: [resultBuffer],
+        args: [queryIdBuffer, resultBuffer],
       });
 
-      await submitTxAsync(session.providers, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'submitResult' });
+      await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'submitResult' });
       
       // Update local state optimistically
-      setQueries(queries.map(q => q.id === contractAddress ? { ...q, chainStatus: "RESULT_READY" } : q));
+      setQueries(queries.map(q => q.id === queryIdHex ? { ...q, chainStatus: "RESULT_READY" } : q));
     } catch (e) {
       console.error(e);
       alert("Failed to submit result: " + (e as Error).message);
@@ -116,20 +112,30 @@ export default function ProviderDashboard() {
     }
   };
 
-  const handleReleasePayment = async (contractAddress: string) => {
+  const handleReleasePayment = async (queryIdHex: string) => {
     if (!session) return;
-    setProcessingId(contractAddress);
+    setProcessingId(queryIdHex);
     try {
+      const pkBytes = coinPublicKeyToBytes(session.providers.walletProvider.getCoinPublicKey());
+      
+      const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
+      if (!contractAddress) throw new Error("Marketplace address not set in .env.local! Please complete Admin Setup.");
+
+      const queryIdBuffer = new Uint8Array(32);
+      for (let i = 0; i < 32; i++) {
+        queryIdBuffer[i] = parseInt(queryIdHex.slice(i * 2, i * 2 + 2), 16);
+      }
+
       const callTxData = await createUnprovenCallTx(session.providers as any, {
-        compiledContract: getCompiledContract(),
+        compiledContract: getCompiledContract(pkBytes),
         contractAddress,
         circuitId: 'releasePayment',
-        args: [],
+        args: [queryIdBuffer],
       });
 
       await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'releasePayment' });
       
-      setQueries(queries.map(q => q.id === contractAddress ? { ...q, chainStatus: "PAID", isPolling: false } : q));
+      setQueries(queries.map(q => q.id === queryIdHex ? { ...q, chainStatus: "PAID", isPolling: false } : q));
     } catch (e) {
       console.error(e);
       alert("Failed to release payment: " + (e as Error).message);

@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Lock, FileText, ArrowRight, ShieldCheck, ExternalLink, Activity } from "lucide-react";
 import Link from "next/link";
 
-import { createUnprovenDeployTx, submitTxAsync } from '@midnight-ntwrk/midnight-js-contracts';
+import { createUnprovenCallTx, submitTxAsync } from '@midnight-ntwrk/midnight-js-contracts';
 import { sampleSigningKey } from '@midnight-ntwrk/compact-runtime';
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
 
@@ -49,9 +49,11 @@ export default function SubmitQueryPage() {
       .catch(console.error);
   }, []);
 
-  const getCompiledContract = () => {
+  const getCompiledContract = (pkBytes: Uint8Array) => {
     return CompiledContract.make('privateinfer', Contract).pipe(
-      CompiledContract.withVacantWitnesses,
+      CompiledContract.withWitnesses({
+        callerAddress: (context: any) => [context.state, pkBytes]
+      }),
       CompiledContract.withCompiledFileAssets('/zk/privateinfer'),
     ) as any;
   };
@@ -78,26 +80,30 @@ export default function SubmitQueryPage() {
       const pk = session.providers.walletProvider.getCoinPublicKey();
       const providerBuffer = coinPublicKeyToBytes(pk);
 
-      const deployTxData = await createUnprovenDeployTx(
-        { zkConfigProvider: session.providers.zkConfigProvider, walletProvider: session.providers.walletProvider },
-        { 
-          compiledContract: getCompiledContract(), 
-          args: [commitmentBuffer, providerBuffer], 
-          signingKey: sampleSigningKey() 
-        },
-      );
+      const queryIdBuffer = new Uint8Array(32);
+      crypto.getRandomValues(queryIdBuffer);
+      const queryIdHex = Array.from(queryIdBuffer).map((b) => b.toString(16).padStart(2, '0')).join('');
 
-      const txId = await submitTxAsync(session.providers as any, { unprovenTx: deployTxData.private.unprovenTx });
-      const contractAddress = deployTxData.public.contractAddress;
+      const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
+      if (!contractAddress) throw new Error("Marketplace address not set in .env.local! Please complete Admin Setup.");
+
+      const callTxData = await createUnprovenCallTx(session.providers as any, {
+        compiledContract: getCompiledContract(providerBuffer),
+        contractAddress,
+        circuitId: 'createQuery',
+        args: [queryIdBuffer, commitmentBuffer, providerBuffer],
+      });
+
+      const txId = await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'createQuery' });
 
       // Save to Neon DB so Provider Dashboard can find it
       await fetch("/api/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ providerId, contractAddress })
+        body: JSON.stringify({ providerId, queryId: queryIdHex })
       });
 
-      setDeployedContract({ address: contractAddress, txId: txId as string });
+      setDeployedContract({ address: queryIdHex, txId: txId as string });
 
     } catch (e: any) {
       console.error(e);
@@ -123,7 +129,7 @@ export default function SubmitQueryPage() {
           </CardHeader>
           <CardContent className="space-y-4 pt-4 pb-8">
             <div className="bg-background rounded-md p-4 border border-border">
-              <div className="text-sm text-muted-foreground mb-1">Contract Address</div>
+              <div className="text-sm text-muted-foreground mb-1">Query ID</div>
               <div className="font-mono text-sm break-all text-primary">{deployedContract.address}</div>
             </div>
             <div className="bg-background rounded-md p-4 border border-border">
