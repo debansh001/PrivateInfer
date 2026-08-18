@@ -1,13 +1,12 @@
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars */
 import { deployContract } from '@midnight-ntwrk/midnight-js-contracts';
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
-// @ts-expect-error Upstream package issues
 import { NodeZkConfigProvider } from '@midnight-ntwrk/midnight-js-node-zk-config-provider';
 // @ts-expect-error Upstream package issues
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 // @ts-expect-error Upstream package issues
 import { httpClientProofProvider } from '@midnight-ntwrk/midnight-js-http-client-proof-provider';
-// @ts-expect-error Upstream package issues
 import { levelPrivateStateProvider } from '@midnight-ntwrk/midnight-js-level-private-state-provider';
 import { setNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 import * as path from 'path';

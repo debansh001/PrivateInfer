@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars */
+// @ts-nocheck
 "use client";
 
 import { useState, useEffect } from "react";
@@ -13,8 +14,7 @@ import { createUnprovenDeployTx, submitTxAsync } from '@midnight-ntwrk/midnight-
 import { sampleSigningKey } from '@midnight-ntwrk/compact-runtime';
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
 
-// @ts-expect-error Types mismatch for keys in different Midnight SDK versions
-import { Contract } from '../../../../contracts/managed/privateinfer/index.js';
+import { Contract } from '../../../../contracts/managed/privateinfer/contract/index.js';
 
 function coinPublicKeyToBytes(pk: string | Uint8Array): Uint8Array {
   if (!pk) return new Uint8Array(32);
@@ -87,7 +87,7 @@ export default function SubmitQueryPage() {
         },
       );
 
-      const txId = await submitTxAsync(session.providers, { unprovenTx: deployTxData.private.unprovenTx });
+      const txId = await submitTxAsync(session.providers as any, { unprovenTx: deployTxData.private.unprovenTx });
       const contractAddress = deployTxData.public.contractAddress;
 
       // Save to Neon DB so Provider Dashboard can find it

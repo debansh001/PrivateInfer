@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import { setNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
-// @ts-expect-error Upstream package issues
 import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
-// @ts-expect-error Upstream package issues
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 import type { MidnightProvider, WalletProvider } from '@midnight-ntwrk/midnight-js-types';
 import { ContractState } from '@midnight-ntwrk/compact-runtime';
@@ -67,7 +65,7 @@ export function createPatchedPublicDataProvider(queryUrl: string, subscriptionUr
         action.transaction?.block?.ledgerParameters
           ? LedgerParameters.deserialize(fromHex(action.transaction.block.ledgerParameters))
           : LedgerParameters.initialParameters(),
-      ];
+      ] as [ZswapChainState, ContractState, LedgerParameters];
     },
   };
 }
@@ -101,7 +99,7 @@ export type ConnectedSession = {
   providers: {
     privateStateProvider: ReturnType<typeof createPrivateStateProvider>;
     publicDataProvider: ReturnType<typeof createPatchedPublicDataProvider>;
-    zkConfigProvider: FetchZkConfigProvider;
+    zkConfigProvider: FetchZkConfigProvider<any>;
     proofProvider: { proveTx: (unprovenTx: any, _config: any) => Promise<any> };
     walletProvider: WalletProvider;
     midnightProvider: MidnightProvider;

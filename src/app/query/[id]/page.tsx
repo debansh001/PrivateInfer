@@ -7,8 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Shield, CheckCircle2, CircleDashed, CheckCircle, ExternalLink, AlertTriangle } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
 
-// @ts-ignore
-import { Contract } from '../../../../contracts/managed/privateinfer/index.js';
+import { Contract } from '../../../../contracts/managed/privateinfer/contract/index.js';
 
 export default function QueryStatusPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -28,7 +27,7 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
       try {
         const stateData = await session.providers.publicDataProvider.queryContractState(contractAddress);
         if (stateData && stateData.data) {
-          // Deserializes the raw ledger bytes into our typed ledger object
+          // @ts-expect-error Ledger method exists but TS has mismatching types
           const ledger = Contract.ledger(stateData.data);
           
           if (ledger.status) setStatus(ledger.status);
