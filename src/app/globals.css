@@ -1,0 +1,76 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-verified: var(--accent-verified);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+}
+
+:root, .dark {
+  /* PrivateInfer Identity */
+  --background: #0B0E17;
+  --foreground: #F4F5F9;
+  
+  --surface: #141827;
+  --surface-raised: #1C2136;
+  
+  --accent-primary: #8B7FF5;
+  --accent-verified: #4FD1C5;
+  
+  --primary: #F4F5F9;
+  --primary-foreground: #0B0E17;
+  
+  --muted: #141827;
+  --muted-foreground: #8B90A6;
+  
+  --accent: #1C2136;
+  --accent-foreground: #F4F5F9;
+  
+  --card: #141827;
+  --card-foreground: #F4F5F9;
+  
+  --border: #1C2136;
+  --input: #1C2136;
+  --ring: #8B7FF5;
+  
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+  code, pre {
+    @apply font-mono;
+  }
+}
