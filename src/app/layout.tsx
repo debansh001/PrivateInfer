@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/Header";
+import { Header } from "@/components/Header";
+import { WalletProvider } from "@/contexts/WalletContext";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -31,10 +32,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}>
       <body className="antialiased min-h-screen bg-background text-primary font-sans flex flex-col">
-        <Header />
-        <div className="flex-1 flex flex-col">
-          {children}
-        </div>
+        <WalletProvider>
+          <Header />
+          <div className="flex-1 flex flex-col">
+            {children}
+          </div>
+        </WalletProvider>
       </body>
     </html>
   );
