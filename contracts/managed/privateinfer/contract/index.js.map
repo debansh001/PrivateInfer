@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "file": "index.js",
+  "sourceRoot": "../../../",
+  "sources": ["privateinfer.compact"],
+  "names": [],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;EAaA;;;;;;;;;;;;;MAOA,AAAA,YASC;;;;;cAT2B,iBAA0B;;;;;;;;;;;;;;;;;;yCAA1B,iBAA0B;;;;;;;;;8CAA1B,iBAA0B;;;OASrD;MAED,AAAA,cAMC;;;;;;;;;;;;;;;;;;;;;;OAAA;;;;;;;;;;GAnBA;EALD;;;;;UAAY,YAAqB;UAAE,UAAmB;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;IAPtD;;;;;;;;;yEAAwC;IACxC;;;;;;;;;yEAAoC;IACpC;;;;;;;;;yEAAkC;IAClC;;;;;;;;;yEAAsC;IAKpC;;;;;;;2HAA0B,YAAU;;yEAAtB;IACd;;;;;;;2HAAwB,UAAQ;;yEAApB;IACZ;;;;;;;;;yEAAM;IACN;;;;;;;;;yEAAU;;;;;;;GACX;EAPD,AAAA,gBAAmC;;0DAAnC,aAAmC;;;;;;;;;;;;;;GAAA;EASnC,AAAA,eASC,4BAT2B,iBAA0B;oDAC7C;;;;;;;;;;;yHAAM;;;;UAGP,QAAwB;0CACvB,QAAM;kEAAI;;;;;;;;;;;uIAAY;;IAE7B;;;;;;;2HAAsB,iBAAe;;yEAA3B;IACV;;;;;;;;;yEAAM;;GACP;EAED,AAAA,iBAMC;oDALQ;;;;;;;;;;;yHAAM;;;;IAIb;;;;;;;;;yEAAM;;GACP;;;;;;;;;;;;;;;;;;;;IA/BD;qCAAA;;;;;;;;;;;0GAAwC;KAAA;IACxC;qCAAA;;;;;;;;;;;0GAAoC;KAAA;IACpC;qCAAA;;;;;;;;;;;0GAAkC;KAAA;IAClC;qCAAA;;;;;;;;;;;0GAAsC;KAAA;;;;;;;;;;"
+}
