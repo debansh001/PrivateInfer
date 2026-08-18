@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 import { setNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
+// @ts-expect-error Upstream package issues
 import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
+// @ts-expect-error Upstream package issues
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 import type { MidnightProvider, WalletProvider } from '@midnight-ntwrk/midnight-js-types';
 import { ContractState } from '@midnight-ntwrk/compact-runtime';

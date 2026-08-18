@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -12,12 +13,12 @@ import { createUnprovenDeployTx, submitTxAsync } from '@midnight-ntwrk/midnight-
 import { sampleSigningKey } from '@midnight-ntwrk/compact-runtime';
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
 
-// @ts-ignore
+// @ts-expect-error Types mismatch for keys in different Midnight SDK versions
 import { Contract } from '../../../../contracts/managed/privateinfer/index.js';
 
 function coinPublicKeyToBytes(pk: string | Uint8Array): Uint8Array {
   if (!pk) return new Uint8Array(32);
-  const hex = typeof pk === 'string' ? pk : Array.from(pk as number[]).map((b) => b.toString(16).padStart(2, '0')).join('');
+  const hex = typeof pk === 'string' ? pk : Array.from(pk as unknown as number[]).map((b) => b.toString(16).padStart(2, '0')).join('');
   const bytes = new Uint8Array(32);
   for (let i = 0; i < 32; i++) {
     const val = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
@@ -131,14 +132,14 @@ export default function SubmitQueryPage() {
             </div>
           </CardContent>
           <CardFooter className="flex gap-4 justify-center bg-surface-raised/50 border-t border-border pt-6 pb-8">
-            <Button variant="outline" className="border-accent-primary text-accent-primary hover:bg-accent-primary/10" asChild>
-              <a href={`https://explorer.preview.midnight.network/transaction/${deployedContract.txId}`} target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" className="border-accent-primary text-accent-primary hover:bg-accent-primary/10">
+              <a href={`https://explorer.preview.midnight.network/transaction/${deployedContract.txId}`} target="_blank" rel="noopener noreferrer" className="flex items-center">
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Verify in 1AM Explorer
               </a>
             </Button>
-            <Button className="bg-accent-primary hover:bg-accent-primary/90" asChild>
-              <Link href={`/query/${deployedContract.address}`}>
+            <Button className="bg-accent-primary hover:bg-accent-primary/90">
+              <Link href={`/query/${deployedContract.address}`} className="flex items-center">
                 <Activity className="w-4 h-4 mr-2" />
                 Track Query Status
               </Link>

@@ -44,10 +44,10 @@ export default function LandingPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="p-4 bg-background rounded-md border border-border text-sm font-mono text-muted-foreground whitespace-pre-wrap">
-                > Patient presents with mild...{"\n"}
-                > [ENCRYPTING PAYLOAD]{"\n"}
-                > COMMITMENT: 0x8f4c...3b92{"\n"}
-                > STATUS: <span className="text-accent-primary animate-pulse">PROCESSING</span>
+                &gt; Patient presents with mild...{"\n"}
+                &gt; [ENCRYPTING PAYLOAD]{"\n"}
+                &gt; COMMITMENT: 0x8f4c...3b92{"\n"}
+                &gt; STATUS: <span className="text-accent-primary animate-pulse">PROCESSING</span>
               </div>
             </CardContent>
           </Card>

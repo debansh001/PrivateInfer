@@ -1,0 +1,4 @@
+{
+  "extends": "next/core-web-vitals",
+  "ignorePatterns": ["contracts/managed/**", ".github/**", "node_modules/**", ".next/**", "dist/**"]
+}

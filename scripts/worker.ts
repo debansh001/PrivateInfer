@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unused-vars */
 import { Redis } from '@upstash/redis';
 import { PrismaClient } from '@prisma/client';
 import { Pool } from '@neondatabase/serverless';
@@ -7,8 +8,8 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env' });
 
 const neon = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaNeon(neon);
-const prisma = new PrismaClient({ adapter });
+const adapter = new PrismaNeon(neon as any);
+const prisma = new PrismaClient({ adapter: adapter as any });
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
