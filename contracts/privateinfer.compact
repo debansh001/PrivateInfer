@@ -1,0 +1,38 @@
+pragma language_version >= 0.22;
+
+import CompactStandardLibrary;
+
+export enum QueryStatus { PROCESSING, RESULT_READY, PAID }
+
+export ledger commitmentHash: Bytes<32>;
+export ledger resultHash: Bytes<32>;
+export ledger status: QueryStatus;
+export ledger providerAddr: Bytes<32>;
+
+witness callerAddress(): Bytes<32>;
+
+constructor(commitment: Bytes<32>, provider: Bytes<32>) {
+  commitmentHash = disclose(commitment);
+  providerAddr = disclose(provider);
+  status = QueryStatus.PROCESSING;
+  resultHash = pad(32, "");
+}
+
+export circuit submitResult(resultProofHash: Bytes<32>): [] {
+  assert(status == QueryStatus.PROCESSING, "Query not processing");
+  
+  // Only the assigned provider can submit result
+  const caller = callerAddress();
+  assert(caller == providerAddr, "Not assigned provider");
+  
+  resultHash = disclose(resultProofHash);
+  status = QueryStatus.RESULT_READY;
+}
+
+export circuit releasePayment(): [] {
+  assert(status == QueryStatus.RESULT_READY, "Result not ready");
+  
+  // In a real implementation this would transfer tokens to providerAddr.
+  // For Phase 1, we just update the status flag.
+  status = QueryStatus.PAID;
+}
