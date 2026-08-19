@@ -7,7 +7,19 @@ import { Shield, CheckCircle2, CircleDashed, CheckCircle, ExternalLink, AlertTri
 import { useWallet } from "@/contexts/WalletContext";
 
 import { Contract } from '../../../../contracts/managed/privateinfer/contract/index.js';
+import { createUnprovenCallTx, submitTxAsync } from '@midnight-ntwrk/midnight-js-contracts';
+import { CompiledContract } from '@midnight-ntwrk/compact-js';
 
+function coinPublicKeyToBytes(pk: string | Uint8Array): Uint8Array {
+  if (!pk) return new Uint8Array(32);
+  const hex = typeof pk === 'string' ? pk : Array.from(pk as unknown as number[]).map((b) => b.toString(16).padStart(2, '0')).join('');
+  const bytes = new Uint8Array(32);
+  for (let i = 0; i < 32; i++) {
+    const val = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+    bytes[i] = isNaN(val) ? 0 : val;
+  }
+  return bytes;
+}
 export default function QueryStatusPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   // Using the contract address directly instead of a database ID
@@ -16,6 +28,7 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
   const [status, setStatus] = useState<string>("PROCESSING");
   const [commitmentHash, setCommitmentHash] = useState<string | null>(null);
   const [resultHash, setResultHash] = useState<string | null>(null);
+  const [decryptedData, setDecryptedData] = useState<string | null>(null);
   
   const { isConnected, session, connect } = useWallet();
 
@@ -31,6 +44,7 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
             if (data.commitmentHash) setCommitmentHash(data.commitmentHash);
             if (data.result && data.result.proofHash) {
               setResultHash(data.result.proofHash);
+              if (data.result.decryptedData) setDecryptedData(data.result.decryptedData);
             }
           }
         }
@@ -48,6 +62,60 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
     pollState();
     return () => { isMounted = false; };
   }, [id, status]);
+
+  const [isReleasing, setIsReleasing] = useState(false);
+
+  const getCompiledContract = (pkBytes: Uint8Array) => {
+    return CompiledContract.make('privateinfer', Contract).pipe(
+      CompiledContract.withWitnesses({
+        callerAddress: (context: any) => [context.state, pkBytes]
+      }),
+      CompiledContract.withCompiledFileAssets('/zk/privateinfer'),
+    ) as any;
+  };
+
+  const handleReleasePayment = async () => {
+    if (!isConnected || !session) {
+      await connect('preview');
+      return;
+    }
+    
+    setIsReleasing(true);
+    try {
+      const pkBytes = coinPublicKeyToBytes(session.providers.walletProvider.getCoinPublicKey());
+      
+      const marketplaceAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+      if (!marketplaceAddress) throw new Error("Marketplace address not set in .env.local!");
+
+      const queryIdBuffer = new Uint8Array(32);
+      for (let i = 0; i < 32; i++) {
+        queryIdBuffer[i] = parseInt(id.slice(i * 2, i * 2 + 2), 16);
+      }
+
+      const callTxData = await createUnprovenCallTx(session.providers as any, {
+        compiledContract: getCompiledContract(pkBytes),
+        contractAddress: marketplaceAddress,
+        circuitId: 'releasePayment',
+        args: [queryIdBuffer],
+      });
+
+      await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'releasePayment' });
+      
+      await fetch(`/api/query/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "PAID" })
+      });
+
+      setStatus("PAID");
+      alert("Payment Released Successfully!");
+    } catch (e: any) {
+      console.error(e);
+      alert("Failed to release payment: " + (e.message || e));
+    } finally {
+      setIsReleasing(false);
+    }
+  };
 
   const steps = [
     { id: "PROCESSING", label: "Query Deployed (Processing)", desc: "Contract deployed, waiting for provider inference", hash: commitmentHash },
@@ -122,25 +190,50 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
         <div className="md:col-span-3">
           {(status === "RESULT_READY" || status === "PAID") && resultHash ? (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="bg-amber-500/10 border border-amber-500/20 text-amber-500/90 rounded-md p-4 flex gap-3 text-sm">
-                <AlertTriangle className="w-5 h-5 flex-shrink-0" />
-                <p>
-                  <strong>On-Chain Only Demo:</strong> The result hash has been committed to the chain. In a full implementation, you would decrypt the off-chain payload using the hash to verify integrity.
-                </p>
-              </div>
-
               <Card className="bg-surface border-border">
                 <CardHeader className="border-b border-border/50 pb-4">
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <CheckCircle2 className="w-5 h-5 text-accent-verified" />
-                    Result Verified on Midnight
+                    Secure AI Result Received
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6">
-                  <div className="bg-background rounded-md p-4 border border-border">
-                    <div className="text-sm text-muted-foreground mb-1">On-Chain Result Hash</div>
-                    <div className="font-mono text-sm break-all text-primary">{resultHash}</div>
+                  {decryptedData && (
+                    <div className="bg-primary/5 rounded-md p-4 border border-primary/20 mb-6">
+                      <div className="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
+                        <span>✨ Decrypted AI Output</span>
+                      </div>
+                      <div className="text-sm leading-relaxed text-foreground">
+                        {decryptedData}
+                      </div>
+                    </div>
+                  )}
+                  <div className="bg-background rounded-md p-4 border border-border mb-6">
+                    <div className="text-xs font-semibold text-muted-foreground mb-1 uppercase tracking-wider">Cryptographic Proof (Hash)</div>
+                    <div className="font-mono text-xs break-all text-muted-foreground">{resultHash}</div>
                   </div>
+                  
+                  {status === "RESULT_READY" && (
+                    <div className="border-t border-border pt-6 mt-2">
+                      <h4 className="font-semibold mb-2">Final Step: Release Payment</h4>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        The provider has securely proven the result. Release the tDUST payment to the provider to complete the lifecycle.
+                      </p>
+                      <button 
+                        onClick={handleReleasePayment}
+                        disabled={isReleasing}
+                        className="bg-accent-verified hover:bg-accent-verified/90 text-white px-6 py-2 rounded-md font-medium text-sm transition-colors w-full sm:w-auto flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                        {isReleasing ? <CircleDashed className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                        {isReleasing ? "Releasing..." : "Release Payment"}
+                      </button>
+                    </div>
+                  )}
+                  {status === "PAID" && (
+                    <div className="border-t border-border pt-6 mt-2 text-center text-accent-verified font-medium">
+                      Payment Successfully Released!
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

@@ -46,6 +46,16 @@ export async function PATCH(
     
     if (body.status) {
       await sql`UPDATE "Query" SET status = ${body.status}::"QueryStatus" WHERE id = ${id}`;
+      
+      if (body.status === "RESULT_READY" && body.proofHash) {
+        // We use a simple random string for the ID since Prisma cuids are just strings in the DB
+        const resultId = Math.random().toString(36).substring(2, 15);
+        await sql`
+          INSERT INTO "Result" (id, "queryId", "decryptedData", "proofHash", "createdAt")
+          VALUES (${resultId}, ${id}, ${body.decryptedData || 'No data'}, ${body.proofHash}, NOW())
+          ON CONFLICT ("queryId") DO NOTHING
+        `;
+      }
     }
     
     return NextResponse.json({ success: true });
