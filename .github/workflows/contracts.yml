@@ -1,0 +1,27 @@
+name: Smart Contracts CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'contracts/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'contracts/**'
+
+jobs:
+  compile-contracts:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Compile Compact Contracts
+      # Using the official Midnight Network Compact compiler docker image
+      uses: addnab/docker-run-action@v3
+      with:
+        image: midnightntwrk/compactc:latest
+        options: -v ${{ github.workspace }}/contracts:/workspace -w /workspace
+        run: compact compile privateinfer.compact managed/privateinfer
