@@ -198,12 +198,14 @@ export default function ProviderDashboard() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setSuccessfulTx(null)}>Close</Button>
-            <Button 
-              className="bg-accent-primary"
-              onClick={() => window.open("https://explorer.preview.midnight.network/", "_blank", "noopener,noreferrer")}
+            <a
+              href="https://explorer.preview.midnight.network/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "8px", background: "var(--accent-primary, #7c3aed)", color: "#fff", fontSize: "14px", fontWeight: 500, textDecoration: "none", cursor: "pointer" }}
             >
               Open Midnight Explorer
-            </Button>
+            </a>
           </div>
         </div>
       )}

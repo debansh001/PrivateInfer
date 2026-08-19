@@ -174,13 +174,14 @@ export default function SubmitQueryPage() {
             </div>
           </CardContent>
           <CardFooter className="flex gap-4 justify-center bg-surface-raised/50 border-t border-border pt-6 pb-8">
-            <Button 
-              variant="outline" 
-              className="border-accent-primary text-accent-primary hover:bg-accent-primary/10 flex items-center gap-2"
-              onClick={() => window.open("https://explorer.preview.midnight.network/", "_blank", "noopener,noreferrer")}
+            <a
+              href="https://explorer.preview.midnight.network/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "8px", border: "1px solid var(--accent-primary, #7c3aed)", color: "var(--accent-primary, #7c3aed)", fontSize: "14px", fontWeight: 500, textDecoration: "none", cursor: "pointer" }}
             >
               <ExternalLink className="w-4 h-4" /> Open Midnight Explorer
-            </Button>
+            </a>
             <Button className="bg-accent-primary hover:bg-accent-primary/90">
               <Link href={`/query/${deployedContract.address}`} className="flex items-center">
                 <Activity className="w-4 h-4 mr-2" />
