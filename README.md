@@ -92,41 +92,51 @@ Our compact smart contract securely manages the escrow lifecycle, enforces state
 
 Below are the visual proofs of our smart contract deployed and actively managing state on the Midnight Preview Network:
 
-🔸 **Contract Details:** Tracking the compiled privateinfer.compact contract and mapping it to the on-chain state.<br/>
-<img src="assets/SMART-CONTRACTS/Screenshot%202026-08-19%20013619.png" width="800"/><br/><br/>
+#### 1. Contract Details
+Tracking the compiled privateinfer.compact contract and mapping it to the on-chain state.<br/>
+<img src="assets/SMART-CONTRACTS/circuits.png" width="800"/><br/><br/>
 
-🔸 **Successful Contract Deployment:** Proof of the PrivateInfer escrow contract initialized on the Midnight Preview Network.<br/>
-<img src="assets/SMART-CONTRACTS/Screenshot%202026-08-20%20015049.png" width="800"/><br/><br/>
+#### 2. Successful Contract Deployment
+Proof of the PrivateInfer escrow contract initialized on the Midnight Preview Network.<br/>
+<img src="assets/SMART-CONTRACTS/contracts-deploy.png" width="800"/><br/><br/>
 
-🔸 **Zero-Knowledge Proof Transaction (1):** Proof of a successful transaction securely modifying the public state.<br/>
-<img src="assets/SMART-CONTRACTS/Screenshot%202026-08-20%20013343.png" width="800"/><br/><br/>
+#### 3. Zero-Knowledge Proof: Create Query
+Proof of a successful transaction securely modifying the public state to deploy the query.<br/>
+<img src="assets/SMART-CONTRACTS/create-query.png" width="800"/><br/><br/>
 
-🔸 **Zero-Knowledge Proof Transaction (2):** Escrow payment release, verified by the private caller witness securely on-chain.<br/>
-<img src="assets/SMART-CONTRACTS/Screenshot%202026-08-20%20013349.png" width="800"/>
+#### 4. Zero-Knowledge Proof: Submit Result
+Proof of the AI Provider securely submitting the Zero-Knowledge verified result back to the network.<br/>
+<img src="assets/SMART-CONTRACTS/submit-result.png" width="800"/><br/><br/>
+
+#### 5. Zero-Knowledge Proof: Release Payment
+Escrow payment release, verified by the private caller witness securely on-chain.<br/>
+<img src="assets/SMART-CONTRACTS/release-payment.png" width="800"/>
 
 ---
 
 ## 🏗️ Architecture & Workflow
 
 ### Project Architecture
-`mermaid
+
+```mermaid
 graph TD
-    UI[Next.js Client UI] --> |Connects via| Wallet[1AM Wallet]
-    UI --> |Polls Metadata| DB[(Neon PostgreSQL DB)]
-    Wallet --> |Submits ZK Proofs & Txs| Midnight[Midnight Preview Network]
-    Midnight --> |Verifies Proofs| SC[Compact Smart Contract]
-    ProviderNode[AI Provider Node TEE] --> |Reads Hash| Midnight
-    ProviderNode --> |Pushes Off-chain Data| DB
-    ProviderNode --> |Submits Result ZKP| Midnight
-`
+    UI[Next.js Client UI] -->|Connects via| Wallet[Lace Wallet]
+    UI -->|Polls Metadata| DB[(Neon PostgreSQL DB)]
+    Wallet -->|Submits ZK Proofs & Txs| Midnight[Midnight Preview Network]
+    Midnight -->|Verifies Proofs| SC[Compact Smart Contract]
+    ProviderNode[AI Provider Node - TEE] -->|Reads Hash| Midnight
+    ProviderNode -->|Pushes Off-chain Data| DB
+    ProviderNode -->|Submits Result ZKP| Midnight
+```
 
 ### User-Side Workflow
-`mermaid
+
+```mermaid
 sequenceDiagram
     participant U as User (Query Maker)
     participant SC as Midnight Smart Contract
     participant P as AI Provider (TEE)
-    
+
     U->>SC: 1. Deploy Query (Lock tDUST, Commit Hash)
     SC-->>P: 2. Network Emits Event
     P->>P: 3. Decrypt & Run AI Inference inside TEE
@@ -134,17 +144,17 @@ sequenceDiagram
     SC->>SC: 5. Verify Proof (State -> RESULT_READY)
     U->>SC: 6. Verify Result & Release Payment
     SC-->>P: 7. Transfer tDUST Escrow to Provider
-`
+```
 
 ---
 
 ## 📂 File Structure
 
-`	ext
+```text
 PrivateInfer/
 ├── contracts/               # Midnight Compact Smart Contracts
 │   ├── privateinfer.compact # Core logic for ZK verification & Escrow
-│   └── managed/             # Compiled TS/WASM outputs from Compact compiler
+│   └── managed/              # Compiled TS/WASM outputs from Compact compiler
 ├── prisma/                  # Database Schema & Migrations
 │   └── schema.prisma        # Postgres models (Query, Provider, Result)
 ├── src/
@@ -157,7 +167,7 @@ PrivateInfer/
 │   └── lib/                 # Utility functions (crypto, DB client)
 ├── scripts/                 # Admin scripts (e.g., deploying the contract)
 └── .github/workflows/       # CI/CD pipelines (Lint, Typecheck, Smart Contract Build)
-`
+```
 
 ---
 
@@ -193,4 +203,3 @@ npm test
 
 **A massive thank you to the Midnight Network team!** 
 The ability to seamlessly blend public state verification with private local execution using compact is game-changing. This platform allowed us to build an enterprise-grade privacy product that would be completely impossible on traditional blockchains. Thank you for building the future of data protection! 💜
-
