@@ -3,7 +3,7 @@
 
   # 🔒 PrivateInfer
 
-  **Secure, Trustless Off-Chain AI Inference Powered by Midnight Network's Zero-Knowledge Proofs.**
+  **Secure, Trustless Off-Chain AI Inference Powered by Midnight Preview Network's Zero-Knowledge Proofs.**
 
   [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -14,8 +14,13 @@
 
 <br />
 
+> [!IMPORTANT]
+> **Network Notice:** This application and its smart contracts are currently deployed exclusively on the **Midnight Preview Network**. All transactions, zero-knowledge proofs, and escrow mechanisms occur on the Preview testnet environment.
+
 <div align="center">
-  <h3>🌍 <a href="https://private-infer.vercel.app/">Live Deployment</a> | 🎥 <a href="https://youtu.be/w2uHJ5s_E6I">Demo Video</a></h3>
+  <h3>🌍 <a href="https://private-infer.vercel.app/">Live Deployment</a> | 🎥 <a href="https://youtu.be/w2uHJ5s_E6I">Demo Video</a> | 𝕏 <a href="https://x.com/private_infer">X Profile</a></h3>
+
+**Quick Links:** [Setup Guide](SETUP.md) • [Usage Guide](USAGE.md) • [Project Proposal](PROPOSAL.md)
 </div>
 
 <br />
@@ -27,7 +32,7 @@ As AI becomes integral to enterprise operations, industries dealing with highly 
 If a hospital wants to use an advanced AI model to analyze a patient's medical history for early disease detection, they cannot simply send this data to a public LLM like ChatGPT or put it on a public blockchain. Doing so exposes confidential data, violates compliance laws (like HIPAA), and destroys user trust. 
 
 ### ✅ The Solution
-**PrivateInfer** leverages the Midnight Network to solve this problem by providing a trustless marketplace for secure, off-chain AI inference. 
+**PrivateInfer** leverages the Midnight Preview Network to solve this problem by providing a trustless marketplace for secure, off-chain AI inference. 
 1. **Encrypted Inputs:** The Query Maker (e.g., a Hospital) submits highly sensitive, encrypted data.
 2. **Secure Processing:** A decentralized AI Provider Node picks up the task and processes the data strictly inside a secure "black box" (a Trusted Execution Environment / TEE).
 3. **Zero-Knowledge Proofs:** The AI Provider submits the result back to the Midnight smart contract along with a ZK-Proof. This mathematically guarantees to the hospital that the AI model was run exactly as requested—**without ever revealing the patient's data or the result on the public ledger.**
@@ -72,7 +77,7 @@ Our compact smart contract securely manages the escrow lifecycle, enforces state
 **Main Contract Address (Midnight Preview Testnet):** 
 [f8aa07189746565ff037f4c0e37e2d4da99424d0aff92a62344325a499533992](https://explorer.preview.midnight.network/contracts/stream/f8aa07189746565ff037f4c0e37e2d4da99424d0aff92a62344325a499533992)
 
-### 🔗 Sample Midnight Network Transactions
+### 🔗 Sample Midnight Preview Network Transactions
 * 🟢 **Create Query:** [ab8607371723...](https://explorer.1am.xyz/tx/ab860737172342dd59ac880ac25230579a92e8171c6a7e77dd5f706ff33304fd?network=preview)
 * 🟡 **Submit Result & Proof:** [c7dfa24e3f66...](https://explorer.1am.xyz/tx/c7dfa24e3f66a80c7f6cc0dd0fe69cc8502cb8be1fbebfee96afa28d1772331d?network=preview)
 * 🔵 **Release Payment:** [8ab94e92e295...](https://explorer.1am.xyz/tx/8ab94e92e2957f9bd1ebe250a27529886178de5a7cd5a2f35a8c03a1c7142155?network=preview)
@@ -93,7 +98,7 @@ Our compact smart contract securely manages the escrow lifecycle, enforces state
 graph TD
     UI[Next.js Client UI] --> |Connects via| Wallet[1AM Wallet]
     UI --> |Polls Metadata| DB[(Neon PostgreSQL DB)]
-    Wallet --> |Submits ZK Proofs & Txs| Midnight[Midnight Blockchain]
+    Wallet --> |Submits ZK Proofs & Txs| Midnight[Midnight Preview Network]
     Midnight --> |Verifies Proofs| SC[Compact Smart Contract]
     ProviderNode[AI Provider Node TEE] --> |Reads Hash| Midnight
     ProviderNode --> |Pushes Off-chain Data| DB
@@ -171,5 +176,8 @@ npm test
 
 ## 🙏 Salutation
 
-**A massive thank you to the Midnight Network team!** 
+**A massive thank you to the Midnight Preview Network team!** 
 The ability to seamlessly blend public state verification with private local execution using compact is game-changing. This platform allowed us to build an enterprise-grade privacy product that would be completely impossible on traditional blockchains. Thank you for building the future of data protection! 💜
+
+
+

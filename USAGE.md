@@ -1,49 +1,51 @@
-# USAGE.md — PrivateInfer
+﻿> [!IMPORTANT]
+> **Network Notice:** This application and its smart contracts are currently deployed exclusively on the **Midnight Preview Network**. All transactions, zero-knowledge proofs, and escrow mechanisms occur on the Preview testnet environment.
 
-## Who this is for
+# 📖 USAGE GUIDE
 
-Anyone running the app locally or using the deployed Vercel instance on the Midnight **Preview** network. This is a hackathon build demonstrating how Midnight's Zero-Knowledge Compact contracts can facilitate trustless AI inferences without exposing sensitive data.
+This guide explains how to walk through the end-to-end lifecycle of a secure AI Inference using **PrivateInfer** on the Midnight Preview Testnet.
 
-## Disclaimer
+---
 
-This is a Preview-testnet demo. tDUST are test tokens with no real value. Model responses are simulated for the sake of demonstrating the cryptography and state transitions, not medical or legal advice — always consult a licensed professional.
+## 1. Initial Setup (Admin)
+Before users can create queries, the master smart contract must be deployed.
+1. Navigate to /admin in your browser.
+2. Connect your 1AM wallet.
+3. Click **Deploy Marketplace Contract**.
+4. Approve the transaction.
+5. Copy the deployed contract address and paste it into your .env.local file under NEXT_PUBLIC_CONTRACT_ADDRESS.
+6. *(If running locally, restart your Next.js server to apply the ENV change).*
 
-## Basic Flow
+---
 
-### 1. Connect 1AM Wallet
-- Click **Connect Wallet** on the landing page or header.
-- The **1AM Wallet** extension must be installed and set to the **Midnight Preview** network.
-- Once connected, your address and tDUST balance are available to the dApp.
+## 2. Creating a Secure Query (As a User / Hospital)
+1. Go to the **Home Page**.
+2. Connect your 1AM wallet.
+3. Enter your highly sensitive prompt/data into the input box.
+   - *Example: "Patient #4928 - Analyze encrypted blood markers [Blob] for early signs of Autoimmune disorders."*
+4. Click **Submit Secure Query**.
+5. Approve the transaction in your wallet. This locks your tDUST payment in the Midnight Smart Contract Escrow.
+6. You will be redirected to the **Query Details Page** where you can track the real-time status.
 
-### 2. Admin Setup (First Run Only)
-- PrivateInfer uses an advanced **Singleton Marketplace Contract** architecture.
-- Navigate to `/admin` to deploy the global Marketplace contract.
-- Add the resulting contract address to your `.env.local` as `NEXT_PUBLIC_MARKETPLACE_ADDRESS`.
+---
 
-### 3. Submit a Query (User Flow)
-- Navigate to the **Submit Query** screen (`/query/new`).
-- Type your question/symptoms into the text box.
-- Click **Deploy Contract**. The query payload remains fully off-chain. Only a commitment hash is stored on the ledger inside the global `Map` data structure.
-- You're redirected to a status page tracking your specific `Query ID`.
+## 3. Processing the AI Inference (As the Provider Node)
+1. Click **Provider Hub** in the top navigation bar.
+2. You will see the new query sitting in the "Inference Queue" with a status of Processing.
+3. *(In a production environment, your TEE node would pull the encrypted blob, decrypt it locally, run the AI model, and generate a ZK-Proof).*
+4. Click **Submit Result**.
+5. Approve the transaction. This submits the ZK-Proof and the Result Hash to the Midnight smart contract, transitioning the state to Result Verified.
 
-### 4. Process the Query (Provider Flow)
-- Open a new tab and navigate to the **Provider Hub** (`/provider`).
-- The dashboard indexes the database and lists active queries waiting in the `PROCESSING` state.
-- Click **Submit Result**. You will be prompted by the 1AM Wallet to sign a ZK proof transaction that transitions the contract state to `RESULT_READY` and commits the result hash on-chain.
+---
 
-### 5. Settlement (User Flow)
-- Switch back to the User tab. The status will update to **Result Ready**.
-- Alternatively, on the Provider Hub, click **Release Payment**. This calls the `releasePayment` circuit, simulating the escrow token transfer to the Provider and transitioning the query status to `PAID`.
+## 4. Releasing the Payment (As a User / Hospital)
+1. Return to the **Query Details Page** (or refresh it).
+2. You will see that the smart contract has successfully verified the provider's ZK-Proof.
+3. The page will dynamically display the **"✨ Decrypted AI Output"** mock response.
+4. Because the ZK-Proof mathematically guarantees the AI model was run correctly without tampering, you can confidently click the **Release Payment** button.
+5. Approve the final transaction in your wallet.
+6. The smart contract successfully releases the tDUST escrow to the Provider. 
 
-## Common Issues
+The lifecycle is complete!
 
-| Symptom | Likely cause |
-|---|---|
-| "Connect Wallet" does nothing | 1AM Wallet extension is not installed or unlocked. |
-| Contract call fails with "Marketplace address not set" | You skipped the Admin setup step. Go to `/admin` and update `.env.local`. |
-| Transaction hangs indefinitely | Midnight Preview network block times can occasionally spike. Wait 15-30 seconds. |
 
-## Where to look when something breaks
-
-- Frontend errors: browser console.
-- Contract call errors: 1AM Wallet transaction popup or the Midnight block explorer.

@@ -1,105 +1,79 @@
-# SETUP.md — PrivateInfer
+﻿> [!IMPORTANT]
+> **Network Notice:** This application and its smart contracts are currently deployed exclusively on the **Midnight Preview Network**. All transactions, zero-knowledge proofs, and escrow mechanisms occur on the Preview testnet environment.
 
-Local development setup, in order. Network throughout: **Preview**.
-Wallet: **Lace**.
+# 🛠️ SETUP INSTRUCTIONS
 
-## 1. Prerequisites
+Follow these steps to run **PrivateInfer** locally.
 
-- Node.js 20+, npm
-- Docker Desktop (for the local Midnight proof server)
-- Lace wallet browser extension, set to **Preview** network
-- A Neon account (free tier)
-- An Upstash account (free tier, Redis)
-- Compact compiler CLI installed and on `PATH`
+## Prerequisites
+1. **Node.js (v20+)**
+2. **Docker Desktop** (Optional, only required if you want to modify and recompile the .compact smart contract locally)
+3. **1AM Wallet Extension** installed in your browser and funded with testnet tDUST.
+4. **PostgreSQL Database** (We recommend Neon DB).
 
-## 2. Clone & install
+---
 
-```bash
-git clone <your-repo-url>
-cd privateinfer
+## 1. Environment Variables
+Create a .env.local file in the root directory and add the following keys:
+
+\\\env
+# PostgreSQL connection string
+DATABASE_URL="postgresql://user:password@host/dbname"
+
+# Midnight Preview Network Configuration
+NEXT_PUBLIC_NETWORK_ID="preview"
+NEXT_PUBLIC_INDEXER_URL="https://indexer.preview.midnight.network"
+NEXT_PUBLIC_NODE_URL="https://rpc.preview.midnight.network"
+NEXT_PUBLIC_PROVER_URL="https://prover.preview.midnight.network"
+
+# Contract Deployment (Will be filled in after admin deployment)
+NEXT_PUBLIC_CONTRACT_ADDRESS=""
+\\\
+
+---
+
+## 2. Install Dependencies
+Run the following command to install all frontend and Midnight SDK dependencies:
+\\\ash
 npm install
-```
+\\\
 
-## 3. Environment variables
+---
 
-Copy the template and fill in real values:
+## 3. Database Setup (Prisma)
+Initialize your PostgreSQL database with the required tables:
+\\\ash
+npx prisma generate
+npx prisma db push
+\\\
 
-```bash
-cp .env.example .env.local
-```
+---
 
-| Variable | Where to get it |
-|---|---|
-| `DATABASE_URL` | Neon dashboard → Connection Details → pooled connection string |
-| `UPSTASH_REDIS_REST_URL` / `_TOKEN` | Upstash dashboard → REST API tab |
-| `UPSTASH_REDIS_TCP_URL` | Upstash dashboard → "Redis" (TCP) connection tab |
-| `NEXT_PUBLIC_CONTRACT_ADDRESS` | Filled in after Phase 4 deploy — leave blank until then |
-| `NEXT_PUBLIC_MIDNIGHT_NETWORK` | `preview` |
+## 4. Run the Development Server
+Start the Next.js application:
+\\\ash
+npm run dev
+\\\
+The application will be available at [http://localhost:3000](http://localhost:3000).
 
-## 4. Database
+---
 
-```bash
-npx prisma migrate dev --name init
-npx prisma db seed
-```
+## 5. Testing
+The project includes a robust Jest test suite to ensure cryptographic utilities (like wallet public key parsing) function flawlessly.
 
-Confirm tables in Neon's SQL editor or Prisma Studio (`npx prisma studio`).
+Run the tests using:
+\\\ash
+npm test
+\\\
 
-## 5. Local proof server (required for any wallet/contract interaction)
+---
 
-```bash
-docker run -p 6300:6300 midnightntwrk/proof-server:latest midnight-proof-server -v
-```
+## 6. (Optional) Recompiling the Smart Contract
+The smart contract is already compiled and available in contracts/managed/. If you modify contracts/privateinfer.compact, you can recompile it using the official Midnight Docker image:
 
-Leave this running in its own terminal for the whole dev session.
+\\\ash
+docker run --rm -v "\D:\Coding Only\Projects\MIDNIGHT\DEBANSH\PrivateInfer/contracts:/workspace" -w /workspace midnightntwrk/compactc:latest compact compile privateinfer.compact managed/privateinfer
+\\\
+*(Note: This is automatically handled by our GitHub Actions CI pipeline upon pushing to the main branch).*
 
-## 6. Lace wallet
 
-1. Extension set to **Preview** network, proof server set to
-   `http://localhost:6300`.
-2. Get tDUST: `https://faucet.preview.midnight.network/` using your
-   `mn_shield-addr_preview...` address (or the in-wallet "Generate tDUST"
-   flow if available in your version, after first receiving tNIGHT).
-
-## 7. Compile & deploy the contract
-
-```bash
-cd contracts
-compact compile privateinfer.compact ./managed/privateinfer
-# deploy script (see contracts/README.md) — writes the deployed address
-# to your terminal; copy it into .env.local as NEXT_PUBLIC_CONTRACT_ADDRESS
-```
-
-## 8. Run the app
-
-```bash
-npm run dev          # Next.js app
-npm run worker        # background job worker (separate terminal)
-```
-
-Visit `http://localhost:3000`.
-
-## 9. Run tests
-
-```bash
-npm run test          # unit + integration
-npm run test:e2e       # Playwright, stubbed-chain mode
-```
-
-## 10. Deploy
-
-Push to `main` — the frontend CI/CD pipeline deploys to Vercel
-automatically (see `IMPLEMENTATION_PLAN.md` Phase 5). Contract
-redeploys are manual (`workflow_dispatch` in GitHub Actions).
-
-## Troubleshooting quick reference
-
-- **No address / wrong prefix in Lace:** confirm network dropdown says
-  Preview, not Preprod or Undeployed.
-- **Faucet says invalid address:** double-check you copied the address
-  matching the currently selected network exactly.
-- **Wallet won't connect / transactions hang:** confirm the Docker proof
-  server is still running — closing that terminal silently breaks
-  everything downstream.
-- **Prisma can't reach Neon:** confirm you used the *pooled* connection
-  string, not the direct one, for serverless/Vercel compatibility.

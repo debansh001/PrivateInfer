@@ -1,92 +1,43 @@
-# PROPOSAL.md — PrivateInfer
+﻿> [!IMPORTANT]
+> **Network Notice:** This application and its smart contracts are currently deployed exclusively on the **Midnight Preview Network**. All transactions, zero-knowledge proofs, and escrow mechanisms occur on the Preview testnet environment.
 
-**A Confidential AI Inference Marketplace on Midnight**
+# 📄 PROPOSAL: PrivateInfer
 
-## The Problem
+**Secure, Trustless Off-Chain AI Inference Powered by Midnight Preview Network's Zero-Knowledge Proofs.**
 
-AI inference today forces a trade-off neither side wants to make. A person
-asking a medical symptom-checker or a legal-document analyzer has to send
-a raw, often sensitive query to a server they don't control, with no real
-guarantee of how it's stored or reused afterward. On the other side, the
-model provider has to expose outputs — and often risks exposing
-proprietary weights or logic — just to demonstrate the result can be
-trusted. This standoff is a real reason healthcare, legal, and finance
-use cases haven't adopted third-party AI inference at scale.
+## 1. The Core Problem
+As AI integrates into critical enterprise operations—especially in **Healthcare, Finance, and Legal** sectors—organizations face a massive roadblock: **Data Privacy**.
 
-## The Solution
+If a hospital needs to use an advanced AI model to analyze a patient's medical history for early disease detection, they face a dilemma:
+- **Centralized APIs (like ChatGPT):** Expose highly confidential patient data to third parties, violating HIPAA regulations and destroying trust.
+- **Traditional Public Blockchains:** Publishing the data on-chain is even worse, as it creates an immutable, public record of sensitive information.
 
-PrivateInfer is a marketplace where users submit encrypted queries to AI
-models and get back a result plus cryptographic assurance that it was
-produced through a verifiable, tamper-evident process — without the
-user's query ever sitting in a visible server log, and without the
-model's internals being exposed to the user or the network. Midnight's
-dual-state architecture keeps the query and the model's outputs off-chain
-and private, while a Compact contract anchors commitments, verifies the
-provenance chain, and settles payment on-chain.
+Because of this tradeoff between **utility** and **privacy**, industries with sensitive data cannot adopt third-party AI inference at scale.
 
-> **Scope note (Phase 1 honesty):** proving that a model's actual
-> computation was numerically correct in zero knowledge (zkML) is still
-> an open, research-grade problem — not something a Phase 1 build
-> delivers. What Phase 1 *does* deliver is a verifiable custody chain:
-> proof that a specific committed query led to a specific committed
-> result, tied to a specific declared model version, before payment
-> releases. Real "the provider never even sees the plaintext" privacy
-> is a Phase 4/5 goal that needs a trusted execution environment or
-> homomorphic encryption layered on top.
+## 2. The PrivateInfer Solution
+**PrivateInfer** leverages the **Midnight Preview Network** to provide a trustless marketplace for secure, off-chain AI inference. 
 
-## USPs
+We decouple the **execution** of the AI from the **verification** of the AI.
 
-- **Zero query exposure (target state)** — sensitive medical or legal
-  questions never touch a visible, persistent server log.
-- **Zero model exposure** — providers keep proprietary weights and logic
-  private while still proving correctness of custody and provenance.
-- **Verifiable trust without an audit** — users don't have to take the
-  provider's word for it; the on-chain record is the guarantee.
-- **Marketplace neutrality** — multiple model providers can compete on
-  the same platform without exposing IP to each other.
+1. **Encrypted Inputs:** The Query Maker (e.g., a Hospital) submits highly sensitive, encrypted data.
+2. **Secure Processing:** A decentralized AI Provider Node picks up the task and processes the data strictly inside a secure "black box" (a Trusted Execution Environment / TEE).
+3. **Zero-Knowledge Proofs:** The AI Provider submits the result back to the Midnight smart contract along with a ZK-Proof. This mathematically guarantees to the hospital that the AI model was run exactly as requested—**without ever revealing the patient's data or the result on the public ledger.**
+4. **Trustless Escrow:** The smart contract automatically manages the escrow and releases the tDUST payment only when a valid proof is verified on-chain.
 
-## Monetization
+## 3. Why Midnight Preview Network?
+Midnight is the only network capable of supporting this architecture gracefully because of its native support for **Data Protection** and **Zero-Knowledge Smart Contracts (Compact)**.
 
-Every query is a micropayment, split between the model provider and the
-platform — a transaction-fee marketplace, not a subscription. Platform
-revenue scales directly with usage rather than requiring upfront
-enterprise sales, and providers are incentivized to list because it lets
-them monetize models without ever releasing the models themselves.
+- **Public State:** Midnight securely tracks the state machine (Processing, Result Ready, Paid), the escrow balances, and the cryptographic commitment hashes.
+- **Private State (Witnesses):** Midnight allows us to assert identity (e.g., verifying the caller is the Query Creator) and execute logic completely locally within a private circuit. The blockchain only receives the zero-knowledge proof, completely shielding the sensitive medical payload.
 
-## Real-World Example
+## 4. Key Value Propositions
+* **For Data Owners (Hospitals/Enterprises):** Get the power of advanced AI without ever compromising data privacy or regulatory compliance.
+* **For AI Providers:** Monetize proprietary AI models securely.
+* **For Web3:** Prove that blockchain can be used for enterprise-grade privacy applications, moving beyond simple token transfers.
 
-A patient uses a symptom-checker app built on PrivateInfer. Their
-symptoms are encrypted client-side before submission. The licensed
-medical AI model processes the query and produces an answer plus an
-on-chain commitment/result record. The patient receives their result;
-the platform verifies the record on-chain and releases a micropayment to
-the provider.
+## 5. Hackathon Scope & Deliverables
+* **Smart Contract:** A .compact smart contract deployed on the Midnight Preview Testnet that handles the escrow lifecycle and verifies ZK-proofs.
+* **Query Maker UI:** A Next.js interface for users to deploy queries, commit hashes, and release payments via the 1AM Wallet.
+* **AI Provider Hub:** A dashboard for AI nodes to claim queries, mock the secure off-chain execution, and submit the ZK-Proof back to the blockchain.
 
-## Phase-Wise Plan (summary — full detail in `docs/IMPLEMENTATION_PLAN.md`)
 
-| Phase | Focus |
-|---|---|
-| 1 | Single model, single use case, manual flow, Preview testnet |
-| 2 | Provider registry, multi-provider listings, micropayment settlement |
-| 3 | Query batching / cost optimization, second vertical (legal docs) |
-| 4 | Reputation layer, dispute resolution, enterprise onboarding |
-| 5 | Legal & compliance review before any real clinical/legal use |
-
-## Architecture (concise)
-
-```
-User          → encrypts query locally → submits commitment to contract
-Provider      → runs inference off-chain → submits result commitment
-Midnight Chain→ verifies commitment chain, releases micropayment, records outcome
-User          ← receives decrypted result, sees on-chain proof of custody
-```
-
-## Note to the Midnight Team
-
-PrivateInfer is proposed as a demonstration of Midnight's capacity to
-extend commitment/verification patterns beyond identity and finance into
-AI-adjacent workflows — an area where trust and confidentiality are
-usually assumed to be mutually exclusive. We'd welcome guidance on
-realistic proof-generation performance for future zkML-style work, and
-would be glad to explore Preview-network support as a pilot with a small
-number of model providers.
