@@ -35,3 +35,22 @@ export async function GET(
     return NextResponse.json({ error: "Internal Server Error", details: error?.message }, { status: 500 });
   }
 }
+
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const body = await req.json();
+    
+    if (body.status) {
+      await sql`UPDATE "Query" SET status = ${body.status}::"QueryStatus" WHERE id = ${id}`;
+    }
+    
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error("API Error:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}

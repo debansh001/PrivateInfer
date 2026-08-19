@@ -122,7 +122,7 @@ export default function SubmitQueryPage() {
       await fetch("/api/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ providerId, queryId: queryIdHex })
+        body: JSON.stringify({ providerId: providerData.id, queryId: queryIdHex })
       });
 
       setDeployedContract({ address: queryIdHex, txId: txId as string });
@@ -135,29 +135,7 @@ export default function SubmitQueryPage() {
     }
   };
 
-  // Block provider wallets from this page — roles must be separate
-  if (isProviderWallet) {
-    return (
-      <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
-        <Card className="bg-surface border-border overflow-hidden">
-          <div className="h-2 bg-destructive w-full" />
-          <CardHeader className="text-center pt-8">
-            <div className="mx-auto bg-destructive/10 p-4 rounded-full w-fit mb-4">
-              <Lock className="w-12 h-12 text-destructive" />
-            </div>
-            <CardTitle className="text-2xl font-display font-bold">Provider Wallet Detected</CardTitle>
-            <CardDescription className="text-base mt-2">
-              This wallet is registered as an AI Provider. Provider wallets cannot submit queries — the roles must remain separate to ensure trustless verification.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="pb-8 text-center">
-            <p className="text-sm text-muted-foreground mb-6">Please connect a <strong>different wallet</strong> (your user wallet) to submit an inference query.</p>
-            <Button variant="outline" onClick={() => connect('preview')}>Switch Wallet</Button>
-          </CardContent>
-        </Card>
-      </main>
-    );
-  }
+
 
   if (deployedContract) {
     return (

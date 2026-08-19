@@ -87,7 +87,7 @@ export default function ProviderDashboard() {
             return;
           }
           const onChainQueries = data.filter((q: any) => /^[0-9a-f]{64}$/i.test(q.id));
-          setQueries(onChainQueries.map((q: any) => ({ ...q, chainStatus: "PROCESSING", isPolling: false })));
+          setQueries(onChainQueries.map((q: any) => ({ ...q, chainStatus: q.status || "PROCESSING", isPolling: false })));
           setIsLoading(false);
         })
         .catch(e => {
@@ -103,7 +103,11 @@ export default function ProviderDashboard() {
   }, []);
 
   const handleSubmitResult = async (queryIdHex: string) => {
-    if (!session) return;
+    if (!isConnected || !session) {
+      await connect('preview');
+      return;
+    }
+
     setProcessingId(queryIdHex);
     try {
       // Generate a mock result proof hash
@@ -134,6 +138,13 @@ export default function ProviderDashboard() {
 
       const txId = await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'submitResult' });
       
+      // Update the database so the polling keeps it as RESULT_READY
+      await fetch(`/api/query/${queryIdHex}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "RESULT_READY" })
+      });
+
       // Update local state optimistically
       setQueries(queries.map(q => q.id === queryIdHex ? { ...q, chainStatus: "RESULT_READY" } : q));
       setSuccessfulTx({ txId: txId as string, message: "Result Submitted Successfully" });
@@ -168,6 +179,12 @@ export default function ProviderDashboard() {
 
       const txId = await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'releasePayment' });
       
+      await fetch(`/api/query/${queryIdHex}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "PAID" })
+      });
+
       setQueries(queries.map(q => q.id === queryIdHex ? { ...q, chainStatus: "PAID", isPolling: false } : q));
       setSuccessfulTx({ txId: txId as string, message: "Payment Released Successfully" });
     } catch (e) {
