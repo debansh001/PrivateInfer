@@ -57,7 +57,7 @@ export default function ProviderDashboard() {
   };
 
   useEffect(() => {
-    fetch("/api/queries")
+    fetch(`/api/queries?t=${Date.now()}`, { cache: "no-store" })
       .then(res => res.json())
       .then((data: DBQuery[] | any) => {
         if (!Array.isArray(data)) {
@@ -85,7 +85,7 @@ export default function ProviderDashboard() {
 
       const pkBytes = coinPublicKeyToBytes(session.providers.walletProvider.getCoinPublicKey());
 
-      const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
+      const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
       if (!contractAddress) throw new Error("Marketplace address not set in .env.local! Please complete Admin Setup.");
 
       const queryIdBuffer = new Uint8Array(32);
@@ -119,7 +119,7 @@ export default function ProviderDashboard() {
     try {
       const pkBytes = coinPublicKeyToBytes(session.providers.walletProvider.getCoinPublicKey());
       
-      const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
+      const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
       if (!contractAddress) throw new Error("Marketplace address not set in .env.local! Please complete Admin Setup.");
 
       const queryIdBuffer = new Uint8Array(32);
@@ -176,8 +176,8 @@ export default function ProviderDashboard() {
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setSuccessfulTx(null)}>Close</Button>
             <Button className="bg-accent-primary" asChild>
-              <a href={`https://explorer.preview.midnight.network/transaction/${successfulTx.txId}`} target="_blank" rel="noopener noreferrer">
-                Verify Transaction
+              <a href="https://explorer.preview.midnight.network/" target="_blank" rel="noopener noreferrer">
+                Open Midnight Explorer
               </a>
             </Button>
           </div>

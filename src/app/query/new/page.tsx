@@ -84,7 +84,7 @@ export default function SubmitQueryPage() {
       crypto.getRandomValues(queryIdBuffer);
       const queryIdHex = Array.from(queryIdBuffer).map((b) => b.toString(16).padStart(2, '0')).join('');
 
-      const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS;
+      const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
       if (!contractAddress) throw new Error("Marketplace address not set in .env.local! Please complete Admin Setup.");
 
       const callTxData = await createUnprovenCallTx(session.providers as any, {
@@ -133,16 +133,15 @@ export default function SubmitQueryPage() {
               <div className="font-mono text-sm break-all text-primary">{deployedContract.address}</div>
             </div>
             <div className="bg-background rounded-md p-4 border border-border">
-              <div className="text-sm text-muted-foreground mb-1">Transaction ID</div>
-              <div className="font-mono text-sm break-all text-primary">{deployedContract.txId}</div>
+              <div className="text-sm text-muted-foreground mb-1">Marketplace Contract</div>
+              <div className="font-mono text-sm break-all text-primary">{process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || process.env.NEXT_PUBLIC_CONTRACT_ADDRESS}</div>
             </div>
           </CardContent>
           <CardFooter className="flex gap-4 justify-center bg-surface-raised/50 border-t border-border pt-6 pb-8">
-            <Button variant="outline" className="border-accent-primary text-accent-primary hover:bg-accent-primary/10">
-              <a href={`https://explorer.preview.midnight.network/transaction/${deployedContract.txId}`} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Verify in 1AM Explorer
-              </a>
+            <Button variant="outline" className="border-accent-primary text-accent-primary hover:bg-accent-primary/10" asChild>
+              <Link href="https://explorer.preview.midnight.network/" target="_blank" className="flex items-center gap-2">
+                <ExternalLink className="w-4 h-4" /> Open Midnight Explorer
+              </Link>
             </Button>
             <Button className="bg-accent-primary hover:bg-accent-primary/90">
               <Link href={`/query/${deployedContract.address}`} className="flex items-center">
@@ -196,10 +195,7 @@ export default function SubmitQueryPage() {
               </div>
             )}
           </CardContent>
-          <CardFooter className="flex justify-between border-t border-border pt-6">
-            <div className="text-sm text-muted-foreground font-mono">
-              Cost: 0 DUST (Sponsored)
-            </div>
+          <CardFooter className="flex justify-end border-t border-border pt-6">
             {isConnected ? (
               <Button 
                 type="submit" 
