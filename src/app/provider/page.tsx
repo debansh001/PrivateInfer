@@ -58,7 +58,13 @@ export default function ProviderDashboard() {
   useEffect(() => {
     fetch("/api/queries")
       .then(res => res.json())
-      .then((data: DBQuery[]) => {
+      .then((data: DBQuery[] | any) => {
+        if (!Array.isArray(data)) {
+          console.error("Expected array from /api/queries, got:", data);
+          setQueries([]);
+          setIsLoading(false);
+          return;
+        }
         setQueries(data.map(q => ({ ...q, chainStatus: "PROCESSING", isPolling: false })));
         setIsLoading(false);
       })
