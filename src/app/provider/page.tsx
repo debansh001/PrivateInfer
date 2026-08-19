@@ -72,25 +72,30 @@ export default function ProviderDashboard() {
   };
 
   useEffect(() => {
-    fetch(`/api/queries?t=${Date.now()}`, { cache: "no-store" })
-      .then(res => res.json())
-      .then((data: DBQuery[] | any) => {
-        if (!Array.isArray(data)) {
-          console.error("Expected array from /api/queries, got:", data);
-          setQueries([]);
+    const fetchQueries = () => {
+      fetch(`/api/queries?t=${Date.now()}`, { cache: "no-store" })
+        .then(res => res.json())
+        .then((data: DBQuery[] | any) => {
+          if (!Array.isArray(data)) {
+            console.error("Expected array from /api/queries, got:", data);
+            setQueries([]);
+            setIsLoading(false);
+            return;
+          }
+          const onChainQueries = data.filter((q: any) => /^[0-9a-f]{64}$/i.test(q.id));
+          setQueries(onChainQueries.map((q: any) => ({ ...q, chainStatus: "PROCESSING", isPolling: false })));
           setIsLoading(false);
-          return;
-        }
-        // Only show real on-chain queries: IDs must be 64-char hex strings
-        // Seed data uses CUID format which is not a valid queryId
-        const onChainQueries = data.filter((q: any) => /^[0-9a-f]{64}$/i.test(q.id));
-        setQueries(onChainQueries.map((q: any) => ({ ...q, chainStatus: "PROCESSING", isPolling: false })));
-        setIsLoading(false);
-      })
-      .catch(e => {
-        console.error(e);
-        setIsLoading(false);
-      });
+        })
+        .catch(e => {
+          console.error(e);
+          setIsLoading(false);
+        });
+    };
+
+    fetchQueries(); // Fetch immediately on mount
+    const interval = setInterval(fetchQueries, 5000); // Then poll every 5s
+    
+    return () => clearInterval(interval);
   }, []);
 
   const handleSubmitResult = async (queryIdHex: string) => {
@@ -187,14 +192,17 @@ export default function ProviderDashboard() {
     <main className="flex-1 container mx-auto px-4 py-8 md:py-12 max-w-5xl">
       {successfulTx && (
         <div className="mb-8 p-6 bg-surface border border-accent-verified rounded-lg flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 mb-4">
             <div className="bg-accent-verified/10 p-3 rounded-full">
               <CheckCircle2 className="w-8 h-8 text-accent-verified" />
             </div>
             <div>
               <h3 className="font-bold text-lg">{successfulTx.message}</h3>
-              <p className="text-sm text-muted-foreground font-mono mt-1 break-all">TxID: {successfulTx.txId}</p>
+              <p className="text-sm text-muted-foreground font-mono mt-1 break-all">SDK internal ID: {successfulTx.txId.substring(0, 30)}...</p>
             </div>
+          </div>
+          <div className="bg-muted text-muted-foreground p-3 rounded-md text-sm mb-4 border border-border">
+            💡 <strong>To verify on-chain:</strong> Open your 1AM Wallet's <strong>Transactions</strong> tab, copy the actual Transaction Hash, and search for it in the Midnight Explorer.
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setSuccessfulTx(null)}>Close</Button>

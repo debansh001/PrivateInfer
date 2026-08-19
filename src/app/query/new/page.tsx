@@ -87,11 +87,15 @@ export default function SubmitQueryPage() {
       const commitmentBuffer = new Uint8Array(32);
       crypto.getRandomValues(commitmentBuffer);
       
-      // For the demo video, we use the CURRENT wallet's public key as the provider.
-      // This allows the user to act as both User and Provider using the same 1AM Wallet.
-      const pk = session.providers.walletProvider.getCoinPublicKey();
-      const providerBuffer = coinPublicKeyToBytes(pk);
-
+      // Fetch the available Provider node's public key (modelHash) from the DB
+      const providerRes = await fetch('/api/providers');
+      const providerData = await providerRes.json();
+      
+      if (!providerData || !providerData.modelHash) {
+        throw new Error("No Provider node available! Please open the Provider Hub in another browser and connect a wallet first.");
+      }
+      
+      const providerBuffer = coinPublicKeyToBytes(providerData.modelHash);
       const queryIdBuffer = new Uint8Array(32);
       crypto.getRandomValues(queryIdBuffer);
       const queryIdHex = Array.from(queryIdBuffer).map((b) => b.toString(16).padStart(2, '0')).join('');
@@ -162,6 +166,9 @@ export default function SubmitQueryPage() {
             <CardDescription className="text-base mt-2">
               Your query has been encrypted and a dedicated smart contract has been deployed on the Midnight Preview network.
             </CardDescription>
+            <div className="bg-muted text-muted-foreground p-3 rounded-md text-sm mt-4 text-left border border-border">
+              💡 <strong>How to verify on-chain:</strong> The Midnight SDK does not return the raw transaction hash directly. To view this on the Midnight Explorer, open your <strong>1AM Wallet extension</strong>, go to the <strong>Transactions</strong> tab, click your recent "DApp" transaction, copy the Hash, and paste it into the Midnight Explorer search bar!
+            </div>
           </CardHeader>
           <CardContent className="space-y-4 pt-4 pb-8">
             <div className="bg-background rounded-md p-4 border border-border">
