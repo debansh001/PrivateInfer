@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { sql } from "@/lib/prisma";
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,20 +11,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
     }
 
-    // Write to DB so the Provider Dashboard can find the query
-    const query = await prisma.query.create({
-      data: {
-        id: queryId, // Use queryId as the ID
-        providerId,
-        status: "PROCESSING",
-        reward: "5 tDUST",
-        commitmentHash: queryId, // Just a placeholder
-      },
-    });
+    // Upsert provider so foreign key is satisfied
+    await sql`
+      INSERT INTO "Provider" (id, name, "modelHash", "createdAt")
+      VALUES (${providerId}, 'Default Provider', ${providerId}, NOW())
+      ON CONFLICT (id) DO NOTHING
+    `;
 
-    return NextResponse.json({ queryId: query.id }, { status: 201 });
-  } catch (error) {
+    // Write query to DB
+    const rows = await sql`
+      INSERT INTO "Query" (id, "providerId", status, reward, "commitmentHash", "createdAt", "updatedAt")
+      VALUES (${queryId}, ${providerId}, 'PROCESSING', '5 tDUST', ${queryId}, NOW(), NOW())
+      ON CONFLICT (id) DO NOTHING
+      RETURNING id
+    `;
+
+    return NextResponse.json({ queryId: rows[0]?.id || queryId }, { status: 201 });
+  } catch (error: any) {
     console.error("API Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error", details: error?.message }, { status: 500 });
   }
 }

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { sql } from "@/lib/prisma";
+
+export const dynamic = 'force-dynamic';
 
 export async function GET(
   req: NextRequest,
@@ -7,26 +9,29 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const query = await prisma.query.findUnique({
-      where: { id },
-      include: { result: true },
-    });
+    const rows = await sql`
+      SELECT q.*, r.id as result_id, r."decryptedData", r."proofHash"
+      FROM "Query" q
+      LEFT JOIN "Result" r ON r."queryId" = q.id
+      WHERE q.id = ${id}
+    `;
 
-    if (!query) {
+    if (!rows || rows.length === 0) {
       return NextResponse.json({ error: "Query not found" }, { status: 404 });
     }
 
+    const row = rows[0];
     return NextResponse.json({
-      id: query.id,
-      status: query.status,
-      commitmentHash: query.commitmentHash,
-      result: query.result ? {
-        decryptedData: query.result.decryptedData,
-        proofHash: query.result.proofHash
-      } : null
+      id: row.id,
+      status: row.status,
+      commitmentHash: row.commitmentHash,
+      result: row.result_id ? {
+        decryptedData: row.decryptedData,
+        proofHash: row.proofHash,
+      } : null,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("API Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error", details: error?.message }, { status: 500 });
   }
 }

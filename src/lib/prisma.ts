@@ -1,21 +1,8 @@
-import { PrismaClient } from '@prisma/client';
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { PrismaNeon } from '@prisma/adapter-neon';
-import ws from 'ws';
+import { neon } from '@neondatabase/serverless';
 
-neonConfig.webSocketConstructor = ws;
+// Pure HTTP SQL - no Prisma adapter, no WebSocket, no native binaries
+// This is the most reliable way to connect to Neon from Next.js
+export const sql = neon(process.env.DATABASE_URL!);
 
-const prismaClientSingleton = () => {
-  const connectionString = process.env.DATABASE_URL?.replace('-pooler', '') || "";
-  const pool = new Pool({ connectionString });
-  const adapter = new PrismaNeon(pool);
-  return new PrismaClient({ adapter });
-};
 
-declare global {
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
-}
 
-export const prisma = globalThis.prisma ?? prismaClientSingleton();
-
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;

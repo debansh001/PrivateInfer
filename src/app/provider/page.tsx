@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Cpu, Server, Activity, ArrowRight, ShieldCheck, Play, Lock, CheckCircle2 } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
@@ -44,8 +44,23 @@ export default function ProviderDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [successfulTx, setSuccessfulTx] = useState<{ txId: string, message: string } | null>(null);
+  const [providerId, setProviderId] = useState<string | null>(null);
   
   const { isConnected, session, connect } = useWallet();
+
+  // Auto-register the provider wallet when they connect
+  useEffect(() => {
+    if (!isConnected || !session) return;
+    const walletKey = String(session.providers.walletProvider.getCoinPublicKey());
+    fetch("/api/provider/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Provider Node", modelHash: walletKey })
+    })
+      .then(res => res.json())
+      .then(data => { if (data.providerId) setProviderId(data.providerId); })
+      .catch(console.error);
+  }, [isConnected, session]);
 
   const getCompiledContract = (pkBytes: Uint8Array) => {
     return CompiledContract.make('privateinfer', Contract).pipe(
@@ -66,7 +81,10 @@ export default function ProviderDashboard() {
           setIsLoading(false);
           return;
         }
-        setQueries(data.map(q => ({ ...q, chainStatus: "PROCESSING", isPolling: false })));
+        // Only show real on-chain queries: IDs must be 64-char hex strings
+        // Seed data uses CUID format which is not a valid queryId
+        const onChainQueries = data.filter((q: any) => /^[0-9a-f]{64}$/i.test(q.id));
+        setQueries(onChainQueries.map((q: any) => ({ ...q, chainStatus: "PROCESSING", isPolling: false })));
         setIsLoading(false);
       })
       .catch(e => {
@@ -87,6 +105,11 @@ export default function ProviderDashboard() {
 
       const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
       if (!contractAddress) throw new Error("Marketplace address not set in .env.local! Please complete Admin Setup.");
+
+      // Validate that the queryId is a real 64-char hex on-chain ID
+      if (!/^[0-9a-f]{64}$/i.test(queryIdHex)) {
+        throw new Error("This query was not created on-chain and cannot be submitted.");
+      }
 
       const queryIdBuffer = new Uint8Array(32);
       for (let i = 0; i < 32; i++) {
@@ -175,10 +198,11 @@ export default function ProviderDashboard() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setSuccessfulTx(null)}>Close</Button>
-            <Button className="bg-accent-primary" asChild>
-              <a href="https://explorer.preview.midnight.network/" target="_blank" rel="noopener noreferrer">
-                Open Midnight Explorer
-              </a>
+            <Button 
+              className="bg-accent-primary"
+              onClick={() => window.open("https://explorer.preview.midnight.network/", "_blank", "noopener,noreferrer")}
+            >
+              Open Midnight Explorer
             </Button>
           </div>
         </div>
