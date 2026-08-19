@@ -1,5 +1,5 @@
 ﻿<div align="center">
-  <img src="public/icon.png" alt="PrivateInfer Logo" width="120" />
+  <img src="public/logo.png" alt="PrivateInfer Logo" width="120" />
 
   # 🔒 PrivateInfer
 
