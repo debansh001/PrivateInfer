@@ -66,6 +66,17 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   return (
     <WalletContext.Provider value={{ address, isConnected, walletType, isConnecting, walletStatus, session, connect, disconnect }}>
       {children}
+      {isConnecting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="bg-surface border border-border p-8 rounded-lg shadow-xl max-w-sm w-full text-center flex flex-col items-center">
+            <div className="w-12 h-12 border-4 border-accent-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+            <h3 className="text-xl font-bold font-display mb-2">Wallet is Syncing</h3>
+            <p className="text-sm text-muted-foreground">
+              Please wait while we connect to your wallet. This may take a few moments. If prompted, please authorize the connection in your browser extension.
+            </p>
+          </div>
+        </div>
+      )}
     </WalletContext.Provider>
   );
 }
