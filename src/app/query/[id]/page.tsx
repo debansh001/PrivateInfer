@@ -129,7 +129,11 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
     const currentIdx = statuses.indexOf(currentStatus);
     
     if (stepIdx < currentIdx) return "COMPLETED";
-    if (stepIdx === currentIdx) return "ACTIVE";
+    if (stepIdx === currentIdx) {
+      // If we are on the final step, it is completed, not active
+      if (stepId === "PAID") return "COMPLETED";
+      return "ACTIVE";
+    }
     return "UPCOMING";
   };
 
