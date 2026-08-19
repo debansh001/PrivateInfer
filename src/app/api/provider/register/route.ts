@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     const rows = await sql`
       INSERT INTO "Provider" (id, name, "modelHash", "createdAt")
       VALUES (gen_random_uuid()::text, ${name}, ${modelHash}, NOW())
-      ON CONFLICT ("modelHash") DO UPDATE SET name = EXCLUDED.name
+      ON CONFLICT ("modelHash") DO UPDATE SET name = EXCLUDED.name, "createdAt" = NOW()
       RETURNING id
     `;
 

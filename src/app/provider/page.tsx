@@ -51,7 +51,11 @@ export default function ProviderDashboard() {
   // Auto-register the provider wallet when they connect
   useEffect(() => {
     if (!isConnected || !session) return;
-    const walletKey = String(session.providers.walletProvider.getCoinPublicKey());
+    const pk = session.providers.walletProvider.getCoinPublicKey();
+    const walletKey = typeof pk === 'string' 
+      ? pk 
+      : Array.from(pk as any).map((b: any) => b.toString(16).padStart(2, '0')).join('');
+    
     fetch("/api/provider/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

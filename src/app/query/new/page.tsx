@@ -40,7 +40,11 @@ export default function SubmitQueryPage() {
   // If so, block it — providers cannot submit queries, they are different roles
   useEffect(() => {
     if (!isConnected || !session) return;
-    const walletKey = String(session.providers.walletProvider.getCoinPublicKey());
+    const pk = session.providers.walletProvider.getCoinPublicKey();
+    const walletKey = typeof pk === 'string' 
+      ? pk 
+      : Array.from(pk as any).map((b: any) => b.toString(16).padStart(2, '0')).join('');
+    
     // Check if this wallet is registered as a Provider
     fetch(`/api/provider/register?walletKey=${encodeURIComponent(walletKey)}`)
       .then(res => res.json())
@@ -103,8 +107,10 @@ export default function SubmitQueryPage() {
       const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
       if (!contractAddress) throw new Error("Marketplace address not set in .env.local! Please complete Admin Setup.");
 
+      const callerPkBytes = coinPublicKeyToBytes(session.providers.walletProvider.getCoinPublicKey());
+
       const callTxData = await createUnprovenCallTx(session.providers as any, {
-        compiledContract: getCompiledContract(providerBuffer),
+        compiledContract: getCompiledContract(callerPkBytes),
         contractAddress,
         circuitId: 'createQuery',
         args: [queryIdBuffer, commitmentBuffer, providerBuffer],
