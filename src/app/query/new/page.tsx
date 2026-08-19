@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from "react";
 import { useWallet } from "@/contexts/WalletContext";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Lock, FileText, ArrowRight, ShieldCheck, ExternalLink, Activity } from "lucide-react";
@@ -33,21 +33,33 @@ export default function SubmitQueryPage() {
   const [deployedContract, setDeployedContract] = useState<{ address: string, txId: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [providerId, setProviderId] = useState<string | null>(null);
+  const [isProviderWallet, setIsProviderWallet] = useState(false);
   const { isConnected, session, connect } = useWallet();
 
+  // When wallet connects, check if it's a registered provider wallet
+  // If so, block it — providers cannot submit queries, they are different roles
   useEffect(() => {
-    // Fetch a mock provider from our DB just for the relation
-    fetch("/api/provider/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: "pi-medical-v1.0", modelHash: "0x9a8bc..." })
-    })
+    if (!isConnected || !session) return;
+    const walletKey = String(session.providers.walletProvider.getCoinPublicKey());
+    // Check if this wallet is registered as a Provider
+    fetch(`/api/provider/register?walletKey=${encodeURIComponent(walletKey)}`)
       .then(res => res.json())
       .then(data => {
-         if (data.providerId) setProviderId(data.providerId);
+        if (data.isProvider) {
+          setIsProviderWallet(true);
+        } else {
+          // Register a user-side "query maker" provider entry (internal linkage only)
+          return fetch("/api/provider/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name: "Query Maker", modelHash: walletKey })
+          })
+            .then(res => res.json())
+            .then(data => { if (data.providerId) setProviderId(data.providerId); });
+        }
       })
       .catch(console.error);
-  }, []);
+  }, [isConnected, session]);
 
   const getCompiledContract = (pkBytes: Uint8Array) => {
     return CompiledContract.make('privateinfer', Contract).pipe(
@@ -113,6 +125,30 @@ export default function SubmitQueryPage() {
     }
   };
 
+  // Block provider wallets from this page — roles must be separate
+  if (isProviderWallet) {
+    return (
+      <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
+        <Card className="bg-surface border-border overflow-hidden">
+          <div className="h-2 bg-destructive w-full" />
+          <CardHeader className="text-center pt-8">
+            <div className="mx-auto bg-destructive/10 p-4 rounded-full w-fit mb-4">
+              <Lock className="w-12 h-12 text-destructive" />
+            </div>
+            <CardTitle className="text-2xl font-display font-bold">Provider Wallet Detected</CardTitle>
+            <CardDescription className="text-base mt-2">
+              This wallet is registered as an AI Provider. Provider wallets cannot submit queries — the roles must remain separate to ensure trustless verification.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pb-8 text-center">
+            <p className="text-sm text-muted-foreground mb-6">Please connect a <strong>different wallet</strong> (your user wallet) to submit an inference query.</p>
+            <Button variant="outline" onClick={() => connect('preview')}>Switch Wallet</Button>
+          </CardContent>
+        </Card>
+      </main>
+    );
+  }
+
   if (deployedContract) {
     return (
       <main className="flex-1 container mx-auto px-4 py-12 max-w-3xl">
@@ -138,10 +174,12 @@ export default function SubmitQueryPage() {
             </div>
           </CardContent>
           <CardFooter className="flex gap-4 justify-center bg-surface-raised/50 border-t border-border pt-6 pb-8">
-            <Button variant="outline" className="border-accent-primary text-accent-primary hover:bg-accent-primary/10" asChild>
-              <Link href="https://explorer.preview.midnight.network/" target="_blank" className="flex items-center gap-2">
-                <ExternalLink className="w-4 h-4" /> Open Midnight Explorer
-              </Link>
+            <Button 
+              variant="outline" 
+              className="border-accent-primary text-accent-primary hover:bg-accent-primary/10 flex items-center gap-2"
+              onClick={() => window.open("https://explorer.preview.midnight.network/", "_blank", "noopener,noreferrer")}
+            >
+              <ExternalLink className="w-4 h-4" /> Open Midnight Explorer
             </Button>
             <Button className="bg-accent-primary hover:bg-accent-primary/90">
               <Link href={`/query/${deployedContract.address}`} className="flex items-center">
