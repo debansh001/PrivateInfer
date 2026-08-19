@@ -43,6 +43,7 @@ export default function ProviderDashboard() {
   const [queries, setQueries] = useState<OnChainQuery[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [successfulTx, setSuccessfulTx] = useState<{ txId: string, message: string } | null>(null);
   
   const { isConnected, session, connect } = useWallet();
 
@@ -99,10 +100,11 @@ export default function ProviderDashboard() {
         args: [queryIdBuffer, resultBuffer],
       });
 
-      await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'submitResult' });
+      const txId = await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'submitResult' });
       
       // Update local state optimistically
       setQueries(queries.map(q => q.id === queryIdHex ? { ...q, chainStatus: "RESULT_READY" } : q));
+      setSuccessfulTx({ txId: txId as string, message: "Result Submitted Successfully" });
     } catch (e) {
       console.error(e);
       alert("Failed to submit result: " + (e as Error).message);
@@ -132,9 +134,10 @@ export default function ProviderDashboard() {
         args: [queryIdBuffer],
       });
 
-      await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'releasePayment' });
+      const txId = await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'releasePayment' });
       
       setQueries(queries.map(q => q.id === queryIdHex ? { ...q, chainStatus: "PAID", isPolling: false } : q));
+      setSuccessfulTx({ txId: txId as string, message: "Payment Released Successfully" });
     } catch (e) {
       console.error(e);
       alert("Failed to release payment: " + (e as Error).message);
@@ -158,8 +161,30 @@ export default function ProviderDashboard() {
   }
 
   return (
-    <main className="flex-1 container mx-auto px-4 py-12 max-w-5xl">
-      <div className="flex justify-between items-end mb-8">
+    <main className="flex-1 container mx-auto px-4 py-8 md:py-12 max-w-5xl">
+      {successfulTx && (
+        <div className="mb-8 p-6 bg-surface border border-accent-verified rounded-lg flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-accent-verified/10 p-3 rounded-full">
+              <CheckCircle2 className="w-8 h-8 text-accent-verified" />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg">{successfulTx.message}</h3>
+              <p className="text-sm text-muted-foreground font-mono mt-1 break-all">TxID: {successfulTx.txId}</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setSuccessfulTx(null)}>Close</Button>
+            <Button className="bg-accent-primary" asChild>
+              <a href={`https://explorer.preview.midnight.network/transaction/${successfulTx.txId}`} target="_blank" rel="noopener noreferrer">
+                Verify Transaction
+              </a>
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-display font-bold mb-2">Provider Dashboard</h1>
           <p className="text-muted-foreground">
@@ -216,57 +241,59 @@ export default function ProviderDashboard() {
           ) : queries.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">No queries in queue.</div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="border-border hover:bg-transparent">
-                  <TableHead>Contract Address</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>On-Chain Status</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {queries.map((q) => (
-                  <TableRow key={q.id} className="border-border hover:bg-background/50 transition-colors">
-                    <TableCell className="font-mono text-sm">{q.id.slice(0, 16)}...</TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {new Date(q.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      {q.chainStatus === "UNKNOWN" && <Badge variant="outline" className="bg-background text-muted-foreground">Loading...</Badge>}
-                      {q.chainStatus === "PROCESSING" && <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20">Processing</Badge>}
-                      {q.chainStatus === "RESULT_READY" && <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20">Result Ready</Badge>}
-                      {q.chainStatus === "PAID" && <Badge variant="outline" className="bg-accent-verified/10 text-accent-verified border-accent-verified/20">Paid</Badge>}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {q.chainStatus === "PROCESSING" && (
-                        <Button 
-                          size="sm" 
-                          className="bg-accent-primary hover:bg-accent-primary/90"
-                          onClick={() => handleSubmitResult(q.id)}
-                          disabled={processingId === q.id}
-                        >
-                          {processingId === q.id ? "Proving..." : "Submit Result"} 
-                          <Play className="w-3 h-3 ml-2" />
-                        </Button>
-                      )}
-                      {q.chainStatus === "RESULT_READY" && (
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          className="border-accent-verified text-accent-verified hover:bg-accent-verified/10"
-                          onClick={() => handleReleasePayment(q.id)}
-                          disabled={processingId === q.id}
-                        >
-                          {processingId === q.id ? "Releasing..." : "Release Payment"} 
-                          <CheckCircle2 className="w-3 h-3 ml-2" />
-                        </Button>
-                      )}
-                    </TableCell>
+            <div className="overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 pb-4">
+              <Table className="min-w-[600px]">
+                <TableHeader>
+                  <TableRow className="border-border hover:bg-transparent">
+                    <TableHead>Contract Address</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>On-Chain Status</TableHead>
+                    <TableHead className="text-right">Action</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {queries.map((q) => (
+                    <TableRow key={q.id} className="border-border hover:bg-background/50 transition-colors">
+                      <TableCell className="font-mono text-sm">{q.id.slice(0, 16)}...</TableCell>
+                      <TableCell className="text-muted-foreground whitespace-nowrap">
+                        {new Date(q.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        {q.chainStatus === "UNKNOWN" && <Badge variant="outline" className="bg-background text-muted-foreground whitespace-nowrap">Loading...</Badge>}
+                        {q.chainStatus === "PROCESSING" && <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 whitespace-nowrap">Processing</Badge>}
+                        {q.chainStatus === "RESULT_READY" && <Badge variant="outline" className="bg-blue-500/10 text-blue-400 border-blue-500/20 whitespace-nowrap">Result Ready</Badge>}
+                        {q.chainStatus === "PAID" && <Badge variant="outline" className="bg-accent-verified/10 text-accent-verified border-accent-verified/20 whitespace-nowrap">Paid</Badge>}
+                      </TableCell>
+                      <TableCell className="text-right whitespace-nowrap">
+                        {q.chainStatus === "PROCESSING" && (
+                          <Button 
+                            size="sm" 
+                            className="bg-accent-primary hover:bg-accent-primary/90"
+                            onClick={() => handleSubmitResult(q.id)}
+                            disabled={processingId === q.id}
+                          >
+                            {processingId === q.id ? "Proving..." : "Submit Result"} 
+                            <Play className="w-3 h-3 ml-2 hidden sm:inline-block" />
+                          </Button>
+                        )}
+                        {q.chainStatus === "RESULT_READY" && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="border-accent-verified text-accent-verified hover:bg-accent-verified/10"
+                            onClick={() => handleReleasePayment(q.id)}
+                            disabled={processingId === q.id}
+                          >
+                            {processingId === q.id ? "Releasing..." : "Release Payment"} 
+                            <CheckCircle2 className="w-3 h-3 ml-2 hidden sm:inline-block" />
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </CardContent>
       </Card>

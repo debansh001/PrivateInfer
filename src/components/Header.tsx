@@ -12,13 +12,13 @@ export function Header() {
             <div className="bg-accent-primary/10 p-1.5 rounded-md border border-accent-primary/20">
               <Image src="/logo.png" alt="PrivateInfer Logo" width={24} height={24} className="w-5 h-5 object-contain" />
             </div>
-            <span className="font-display font-bold text-xl tracking-tight">PrivateInfer</span>
+            <span className="font-display font-bold text-xl tracking-tight hidden sm:inline-block">PrivateInfer</span>
           </Link>
-          <nav className="hidden md:flex gap-6">
+          <nav className="flex items-center gap-3 md:gap-6 ml-2 md:ml-0">
             <Link href="/provider" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
               Provider Hub
             </Link>
-            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <div className="hidden md:flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <Network className="w-4 h-4" />
               <span className="px-2 py-0.5 rounded-full bg-surface-raised border border-border text-xs font-mono">
                 Midnight Preview
