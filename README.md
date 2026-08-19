@@ -60,13 +60,19 @@ The actual sensitive data is handled strictly as private witnesses during local 
 
 ## 📸 Product Screenshots
 
-| Landing Page | Provider Dashboard |
-| :---: | :---: |
-| <img src="assets/project/landing-page.png" alt="Landing Page" width="400"/> | <img src="assets/project/provider-dashboard.png" alt="Provider Dashboard" width="400"/> |
+Here is the step-by-step visual flow of the PrivateInfer application:
 
-| Creating a Query | Secure Result Ready |
+| 1. Landing Page | 2. Creating a Secure Query |
 | :---: | :---: |
-| <img src="assets/project/add-query.png" alt="Add Query" width="400"/> | <img src="assets/project/query-status.png" alt="Query Status" width="400"/> |
+| <img src="assets/project/landing-page.png" alt="Landing Page" width="400"/> | <img src="assets/project/add-query.png" alt="Add Query" width="400"/> |
+
+| 3. Query Deployed Successfully | 4. AI Provider Dashboard |
+| :---: | :---: |
+| <img src="assets/project/queried-sucessfull.png" alt="Query Successful" width="400"/> | <img src="assets/project/provider-dashboard.png" alt="Provider Dashboard" width="400"/> |
+
+| 5. Secure AI Result & Payment Release |
+| :---: |
+| <img src="assets/project/query-status.png" alt="Query Status" width="800"/> |
 
 ---
 
@@ -74,7 +80,7 @@ The actual sensitive data is handled strictly as private witnesses during local 
 
 Our compact smart contract securely manages the escrow lifecycle, enforces state transitions, and verifies Zero-Knowledge proofs for AI inference. 
 
-**Main Contract Address (Midnight Preview Testnet):** 
+**Main Contract Address (Midnight Preview Network):** 
 [f8aa07189746565ff037f4c0e37e2d4da99424d0aff92a62344325a499533992](https://explorer.preview.midnight.network/contracts/stream/f8aa07189746565ff037f4c0e37e2d4da99424d0aff92a62344325a499533992)
 
 ### 🔗 Sample Midnight Preview Network Transactions
@@ -82,12 +88,21 @@ Our compact smart contract securely manages the escrow lifecycle, enforces state
 * 🟡 **Submit Result & Proof:** [c7dfa24e3f66...](https://explorer.1am.xyz/tx/c7dfa24e3f66a80c7f6cc0dd0fe69cc8502cb8be1fbebfee96afa28d1772331d?network=preview)
 * 🔵 **Release Payment:** [8ab94e92e295...](https://explorer.1am.xyz/tx/8ab94e92e2957f9bd1ebe250a27529886178de5a7cd5a2f35a8c03a1c7142155?network=preview)
 
-### Contract Deployment Images
-*(Check the ssets/SMART-CONTRACTS/ folder for visual proofs of contract deployment and interaction)*
+### Contract Deployment & Verification Visuals
 
-<img src="assets/SMART-CONTRACTS/Screenshot%202026-08-20%20015049.png" alt="Contract Deployment" width="600"/>
-<br />
-<img src="assets/SMART-CONTRACTS/Screenshot%202026-08-19%20013619.png" alt="Contract Details" width="600"/>
+Below are the visual proofs of our smart contract deployed and actively managing state on the Midnight Preview Network:
+
+🔸 **Contract Details:** Tracking the compiled privateinfer.compact contract and mapping it to the on-chain state.<br/>
+<img src="assets/SMART-CONTRACTS/Screenshot%202026-08-19%20013619.png" width="800"/><br/><br/>
+
+🔸 **Successful Contract Deployment:** Proof of the PrivateInfer escrow contract initialized on the Midnight Preview Network.<br/>
+<img src="assets/SMART-CONTRACTS/Screenshot%202026-08-20%20015049.png" width="800"/><br/><br/>
+
+🔸 **Zero-Knowledge Proof Transaction (1):** Proof of a successful transaction securely modifying the public state.<br/>
+<img src="assets/SMART-CONTRACTS/Screenshot%202026-08-20%20013343.png" width="800"/><br/><br/>
+
+🔸 **Zero-Knowledge Proof Transaction (2):** Escrow payment release, verified by the private caller witness securely on-chain.<br/>
+<img src="assets/SMART-CONTRACTS/Screenshot%202026-08-20%20013349.png" width="800"/>
 
 ---
 
@@ -176,8 +191,6 @@ npm test
 
 ## 🙏 Salutation
 
-**A massive thank you to the Midnight Preview Network team!** 
+**A massive thank you to the Midnight Network team!** 
 The ability to seamlessly blend public state verification with private local execution using compact is game-changing. This platform allowed us to build an enterprise-grade privacy product that would be completely impossible on traditional blockchains. Thank you for building the future of data protection! 💜
-
-
 
