@@ -1,4 +1,4 @@
-﻿name: Smart Contracts CI
+name: Smart Contracts CI
 
 on:
   push:
@@ -24,6 +24,6 @@ jobs:
         
     - name: Compile Compact Contracts
       run: |
-        export PATH="\C:\Users\User/.local/bin:\C:\Users\User/.cargo/bin:\"
+        export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
         cd contracts
         compact compile privateinfer.compact managed/privateinfer

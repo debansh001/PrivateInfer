@@ -121,4 +121,4 @@ export circuit cancelQuery(queryId: Bytes<32>): [] {
   queries.insert(pubQueryId, updatedQuery);
 }
 
-// Dummy comment to trigger CI rebuild
+// CI rebuild
