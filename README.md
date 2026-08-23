@@ -21,7 +21,7 @@
 > [!IMPORTANT]
 > **Network Notice:** This application and its smart contracts are currently deployed exclusively on the **Midnight Preview Network**. All transactions, zero-knowledge proofs, and escrow mechanisms occur on the Preview testnet environment.
 
-<div align="center">
+<div align="left">
 
 | 🚀 Key Resources |
 | :---: |
