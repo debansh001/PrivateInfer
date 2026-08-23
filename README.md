@@ -11,9 +11,9 @@
   [![Prisma](https://img.shields.io/badge/Prisma-Neon_DB-1A202C?logo=prisma)](https://www.prisma.io/)
   [![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
   <br/>
-  [![Frontend CI](https://github.com/debansh001/PrivateInfer/actions/workflows/frontend.yml/badge.svg)](https://github.com/debansh001/PrivateInfer/actions/workflows/frontend.yml)
-  [![Contracts CI](https://github.com/debansh001/PrivateInfer/actions/workflows/contracts.yml/badge.svg)](https://github.com/debansh001/PrivateInfer/actions/workflows/contracts.yml)
-  [![Typecheck CI](https://github.com/debansh001/PrivateInfer/actions/workflows/typecheck.yml/badge.svg)](https://github.com/debansh001/PrivateInfer/actions/workflows/typecheck.yml)
+  [![Frontend CI](https://github.com/debansh001/PrivateInfer/actions/workflows/frontend.yml/badge.svg?branch=main)](https://github.com/debansh001/PrivateInfer/actions/workflows/frontend.yml)
+  [![Contracts CI](https://github.com/debansh001/PrivateInfer/actions/workflows/contracts.yml/badge.svg?branch=main)](https://github.com/debansh001/PrivateInfer/actions/workflows/contracts.yml)
+  [![Typecheck CI](https://github.com/debansh001/PrivateInfer/actions/workflows/typecheck.yml/badge.svg?branch=main)](https://github.com/debansh001/PrivateInfer/actions/workflows/typecheck.yml)
 </div>
 
 <br />
