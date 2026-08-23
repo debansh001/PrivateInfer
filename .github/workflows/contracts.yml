@@ -25,5 +25,10 @@ jobs:
     - name: Compile Compact Contracts
       run: |
         export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+        # Download and set the default compiler version
+        compact update
+        # Verify compiler version
+        compact compile --version
+        # Compile the contract
         cd contracts
         compact compile privateinfer.compact managed/privateinfer

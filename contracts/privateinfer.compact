@@ -121,4 +121,5 @@ export circuit cancelQuery(queryId: Bytes<32>): [] {
   queries.insert(pubQueryId, updatedQuery);
 }
 
+
 // CI rebuild
