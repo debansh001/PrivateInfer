@@ -1,4 +1,4 @@
-name: Frontend CI
+﻿name: Frontend CI
 
 on:
   push:
@@ -26,9 +26,10 @@ jobs:
     - name: Run Linter
       run: npm run lint
 
+    - name: Run Tests
+      run: npm test
+
     - name: Build Next.js
       run: npm run build
       env:
-        # We don't need a real DB URL just to build the static pages/types, 
-        # but Next.js might complain if it's referenced in global scopes without being set.
         DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
