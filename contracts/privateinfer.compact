@@ -1,22 +1,21 @@
-/* 
- * ==============================================================================
- * PrivateInfer - Core Privacy Contract
- * ==============================================================================
- * This smart contract powers the PrivateInfer platform on the Midnight Network.
- * It enforces a strict separation between public state and private data processing.
- * 
- * Privacy Model:
- * - Public State (On-Chain): Only opaque identifiers (queryId), cryptographically 
- *   secure hashes (commitmentHash, resultHash), state markers, and escrow balances 
- *   are stored publicly.
- * - Private Witness (Off-Chain): Sensitive inputs (e.g. medical data) and AI outputs 
- *   remain strictly off-chain. Caller identities are verified via Zero-Knowledge 
- *   Proofs (ZKPs) within local circuits (callerAddress() witness) to guarantee 
- *   authorization without leaking the caller's identity publicly.
- * ==============================================================================
- */
-
 pragma language_version >= 0.22;
+
+// ==============================================================================
+// PrivateInfer - Core Privacy Contract
+// ==============================================================================
+// This smart contract powers the PrivateInfer platform on the Midnight Network.
+// It enforces a strict separation between public state and private data processing.
+// 
+// Privacy Model:
+// - Public State (On-Chain): Only opaque identifiers (queryId), cryptographically 
+//   secure hashes (commitmentHash, resultHash), state markers, and escrow balances 
+//   are stored publicly.
+// - Private Witness (Off-Chain): Sensitive inputs (e.g. medical data) and AI outputs 
+//   remain strictly off-chain. Caller identities are verified via Zero-Knowledge 
+//   Proofs (ZKPs) within local circuits (callerAddress() witness) to guarantee 
+//   authorization without leaking the caller's identity publicly.
+// ==============================================================================
+
 
 import CompactStandardLibrary;
 
