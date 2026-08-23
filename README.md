@@ -10,6 +10,10 @@
   [![Midnight](https://img.shields.io/badge/Midnight-Compact-purple?logo=polkadot)](https://midnight.network/)
   [![Prisma](https://img.shields.io/badge/Prisma-Neon_DB-1A202C?logo=prisma)](https://www.prisma.io/)
   [![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+  <br/>
+  [![Frontend CI](https://github.com/debansh001/PrivateInfer/actions/workflows/frontend.yml/badge.svg)](https://github.com/debansh001/PrivateInfer/actions/workflows/frontend.yml)
+  [![Contracts CI](https://github.com/debansh001/PrivateInfer/actions/workflows/contracts.yml/badge.svg)](https://github.com/debansh001/PrivateInfer/actions/workflows/contracts.yml)
+  [![Typecheck CI](https://github.com/debansh001/PrivateInfer/actions/workflows/typecheck.yml/badge.svg)](https://github.com/debansh001/PrivateInfer/actions/workflows/typecheck.yml)
 </div>
 
 <br />
@@ -18,9 +22,21 @@
 > **Network Notice:** This application and its smart contracts are currently deployed exclusively on the **Midnight Preview Network**. All transactions, zero-knowledge proofs, and escrow mechanisms occur on the Preview testnet environment.
 
 <div align="center">
-  <h3>🌍 <a href="https://private-infer.vercel.app/">Live Deployment</a> | 🎥 <a href="https://youtu.be/w2uHJ5s_E6I">Demo Video</a> | 𝕏 <a href="https://x.com/private_infer">X Profile</a></h3>
 
-**Quick Links:** [Setup Guide](SETUP.md) • [Usage Guide](USAGE.md) • [Project Proposal](PROPOSAL.md)
+| 🚀 Key Resources |
+| :---: |
+| 🌍 **[Live Deployment](https://private-infer.vercel.app/)** |
+| 🎥 **[Demo Video](https://youtu.be/w2uHJ5s_E6I)** |
+| 𝕏 **[X / Twitter Profile](https://x.com/private_infer)** |
+
+<br/>
+
+| 📚 Documentation |
+| :---: |
+| 🛠️ **[Setup Guide](SETUP.md)** |
+| 📖 **[Usage Guide](USAGE.md)** |
+| 📄 **[Project Proposal](PROPOSAL.md)** |
+
 </div>
 
 <br />
