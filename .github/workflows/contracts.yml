@@ -1,4 +1,4 @@
-name: Smart Contracts CI
+﻿name: Smart Contracts CI
 
 on:
   push:
@@ -18,10 +18,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
+    - name: Install Compact Compiler
+      run: |
+        curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+        
     - name: Compile Compact Contracts
-      # Using the official Midnight Network Compact compiler docker image
-      uses: addnab/docker-run-action@v3
-      with:
-        image: midnightntwrk/compactc:latest
-        options: -v ${{ github.workspace }}/contracts:/workspace -w /workspace
-        run: compact compile privateinfer.compact managed/privateinfer
+      run: |
+        export PATH="\C:\Users\User/.local/bin:\C:\Users\User/.cargo/bin:\"
+        cd contracts
+        compact compile privateinfer.compact managed/privateinfer
