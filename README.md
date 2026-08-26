@@ -132,7 +132,7 @@ Escrow payment release, verified by the private caller witness securely on-chain
 
 ```mermaid
 graph TD
-    UI[Next.js Client UI] -->|Connects via| Wallet[Lace Wallet]
+    UI[Next.js Client UI] -->|Connects via| Wallet[1AM Wallet]
     UI -->|Polls Metadata| DB[(Neon PostgreSQL DB)]
     Wallet -->|Submits ZK Proofs & Txs| Midnight[Midnight Preview Network]
     Midnight -->|Verifies Proofs| SC[Compact Smart Contract]
