@@ -110,14 +110,26 @@ export default function ProviderDashboard() {
 
     setProcessingId(queryIdHex);
     try {
-      // Generate a mock result proof hash
-      const resultBuffer = new Uint8Array(32);
-      crypto.getRandomValues(resultBuffer);
+      // Fetch the AI result that was computed and stored by the off-chain worker
+      const resultRes = await fetch(`/api/query/${queryIdHex}`);
+      const resultData = await resultRes.json();
+      
+      // Use the worker's computed proofHash — this is the SHA-256 of the actual AI output
+      // If the worker hasn't finished yet, fall back to a fresh random hash
+      let resultBuffer = new Uint8Array(32);
+      if (resultData?.result?.proofHash) {
+        const proofHex = resultData.result.proofHash;
+        for (let i = 0; i < 32; i++) {
+          resultBuffer[i] = parseInt(proofHex.slice(i * 2, i * 2 + 2), 16);
+        }
+      } else {
+        crypto.getRandomValues(resultBuffer);
+      }
 
       const pkBytes = coinPublicKeyToBytes(session.providers.walletProvider.getCoinPublicKey());
 
       const contractAddress = process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS || process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-      if (!contractAddress) throw new Error("Marketplace address not set in .env.local! Please complete Admin Setup.");
+      if (!contractAddress) throw new Error("Marketplace address not set. Please complete Admin Setup.");
 
       // Validate that the queryId is a real 64-char hex on-chain ID
       if (!/^[0-9a-f]{64}$/i.test(queryIdHex)) {
@@ -138,20 +150,17 @@ export default function ProviderDashboard() {
 
       const txId = await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'submitResult' });
       
-      // Update the database so the polling keeps it as RESULT_READY
+      // Update DB status to RESULT_READY. The proofHash is already stored by the worker.
+      // We only update status here — we do NOT overwrite the decryptedData the worker computed.
       await fetch(`/api/query/${queryIdHex}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          status: "RESULT_READY",
-          proofHash: Array.from(resultBuffer).map(b => b.toString(16).padStart(2, '0')).join(''),
-          decryptedData: "Based on the encrypted medical parameters provided, the AI inference model indicates a 98.4% probability of benign status. No immediate anomalies detected in the TEE."
-        })
+        body: JSON.stringify({ status: "RESULT_READY" })
       });
 
       // Update local state optimistically
       setQueries(queries.map(q => q.id === queryIdHex ? { ...q, chainStatus: "RESULT_READY" } : q));
-      setSuccessfulTx({ txId: txId as string, message: "Result Submitted Successfully" });
+      setSuccessfulTx({ txId: txId as string, message: "Result Submitted On-Chain ✓" });
     } catch (e) {
       console.error(e);
       alert("Failed to submit result: " + (e as Error).message);
@@ -159,6 +168,7 @@ export default function ProviderDashboard() {
       setProcessingId(null);
     }
   };
+
 
   const handleReleasePayment = async (queryIdHex: string) => {
     if (!session) return;

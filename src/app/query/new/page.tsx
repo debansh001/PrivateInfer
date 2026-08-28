@@ -88,8 +88,13 @@ export default function SubmitQueryPage() {
     try {
       await new Promise(r => setTimeout(r, 800));
       
-      const commitmentBuffer = new Uint8Array(32);
-      crypto.getRandomValues(commitmentBuffer);
+      // Hash the query text client-side using SHA-256.
+      // This is the commitment: the raw query never leaves the browser.
+      // The hash is used as the on-chain commitmentHash in the Compact contract.
+      const queryTextEncoder = new TextEncoder();
+      const queryHashBuffer = await crypto.subtle.digest('SHA-256', queryTextEncoder.encode(query));
+      const commitmentBuffer = new Uint8Array(queryHashBuffer);
+      const commitmentHex = Array.from(commitmentBuffer).map(b => b.toString(16).padStart(2, '0')).join('');
       
       // Fetch the available Provider node's public key (modelHash) from the DB
       const providerRes = await fetch('/api/providers');
@@ -118,11 +123,13 @@ export default function SubmitQueryPage() {
 
       const txId = await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'createQuery' });
 
-      // Save to Neon DB so Provider Dashboard can find it
+      // Save to Neon DB so Provider Dashboard can find it.
+      // Also pass the commitmentHex (hash of the query) as the encryptedBlob so the
+      // worker can use it to produce a deterministic, content-bound inference result.
       await fetch("/api/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ providerId: providerData.id, queryId: queryIdHex })
+        body: JSON.stringify({ providerId: providerData.id, queryId: queryIdHex, encryptedBlob: commitmentHex })
       });
 
       setDeployedContract({ address: queryIdHex, txId: txId as string });
@@ -134,6 +141,7 @@ export default function SubmitQueryPage() {
       setIsProcessing(false);
     }
   };
+
 
 
 
