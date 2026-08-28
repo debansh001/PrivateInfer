@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
   <img src="public/logo.png" alt="PrivateInfer Logo" width="120" />
 
   # 🔒 PrivateInfer
@@ -23,7 +23,7 @@
 
 ### 🔗 Important Links
 
-- **Live Preview Demo**: [https://private-infer.vercel.app/](https://private-infer.vercel.app/) *(Live PrivateInfer Application on Preview)*
+- **Live Preprod Demo**: [https://private-infer.vercel.app/](https://private-infer.vercel.app/) *(Live PrivateInfer Application on Preview)*
 - **GitHub Repository**: [https://github.com/debansh001/PrivateInfer](https://github.com/debansh001/PrivateInfer)
 - **Product X (Twitter)**: [https://x.com/private_infer](https://x.com/private_infer) *(Official PrivateInfer X Profile)*
 - **Demo Video**: [https://youtu.be/w2uHJ5s_E6I](https://youtu.be/w2uHJ5s_E6I) *(Watch the PrivateInfer MVP Demo)*
@@ -132,7 +132,7 @@ Escrow payment release, verified by the private caller witness securely on-chain
 
 ```mermaid
 graph TD
-    UI[Next.js Client UI] -->|Connects via| Wallet[Lace Wallet]
+    UI[Next.js Client UI] -->|Connects via| Wallet[1AM Wallet]
     UI -->|Polls Metadata| DB[(Neon PostgreSQL DB)]
     Wallet -->|Submits ZK Proofs & Txs| Midnight[Midnight Preview Network]
     Midnight -->|Verifies Proofs| SC[Compact Smart Contract]
