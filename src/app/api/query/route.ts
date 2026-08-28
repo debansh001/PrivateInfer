@@ -12,7 +12,7 @@ const redis = new Redis({
 
 export async function POST(req: NextRequest) {
   try {
-    const { providerId, queryId, encryptedBlob } = await req.json();
+    const { providerId, queryId, rawQuery, encryptedBlob } = await req.json();
 
     if (!providerId || !queryId) {
       return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
@@ -35,9 +35,8 @@ export async function POST(req: NextRequest) {
     `;
 
     // Push the inference job to the Redis queue so the worker picks it up.
-    // The encryptedBlob (SHA-256 of the user's query) is passed so the worker
-    // can generate a deterministic, content-bound result without seeing raw query text.
-    await redis.lpush("inference_queue", JSON.stringify({ queryId, encryptedBlob: commitmentHash }));
+    // We send the rawQuery so the worker can perform real AI inference.
+    await redis.lpush("inference_queue", JSON.stringify({ queryId, rawQuery, encryptedBlob: commitmentHash }));
 
     return NextResponse.json({ queryId: rows[0]?.id || queryId }, { status: 201 });
   } catch (error: any) {
@@ -45,4 +44,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error", details: error?.message }, { status: 500 });
   }
 }
+
 

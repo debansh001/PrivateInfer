@@ -124,12 +124,12 @@ export default function SubmitQueryPage() {
       const txId = await submitTxAsync(session.providers as any, { unprovenTx: callTxData.private.unprovenTx, circuitId: 'createQuery' });
 
       // Save to Neon DB so Provider Dashboard can find it.
-      // Also pass the commitmentHex (hash of the query) as the encryptedBlob so the
-      // worker can use it to produce a deterministic, content-bound inference result.
+      // We pass the raw query text to the secure off-chain worker via the API,
+      // and pass the commitmentHex to be saved as the public commitmentHash.
       await fetch("/api/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ providerId: providerData.id, queryId: queryIdHex, encryptedBlob: commitmentHex })
+        body: JSON.stringify({ providerId: providerData.id, queryId: queryIdHex, rawQuery: query, encryptedBlob: commitmentHex })
       });
 
       setDeployedContract({ address: queryIdHex, txId: txId as string });
