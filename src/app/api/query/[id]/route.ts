@@ -44,18 +44,27 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await req.json();
-    
+
+    // Validate status transitions — only allow forward movement in the lifecycle
+    const VALID_STATUSES = ['PROCESSING', 'RESULT_READY', 'PAID', 'FAILED'];
+    if (body.status && !VALID_STATUSES.includes(body.status)) {
+      return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
+    }
+
     if (body.status) {
-      await sql`UPDATE "Query" SET status = ${body.status}::"QueryStatus" WHERE id = ${id}`;
+      await sql`UPDATE "Query" SET status = ${body.status}::"QueryStatus", "updatedAt" = NOW() WHERE id = ${id}`;
       
+      // Only insert a Result record if we're moving to RESULT_READY AND no result exists yet
       if (body.status === "RESULT_READY" && body.proofHash) {
-        // We use a simple random string for the ID since Prisma cuids are just strings in the DB
-        const resultId = Math.random().toString(36).substring(2, 15);
-        await sql`
-          INSERT INTO "Result" (id, "queryId", "decryptedData", "proofHash", "createdAt")
-          VALUES (${resultId}, ${id}, ${body.decryptedData || 'No data'}, ${body.proofHash}, NOW())
-          ON CONFLICT ("queryId") DO NOTHING
-        `;
+        const existing = await sql`SELECT id FROM "Result" WHERE "queryId" = ${id} LIMIT 1`;
+        if (existing.length === 0) {
+          const resultId = Math.random().toString(36).substring(2, 15);
+          await sql`
+            INSERT INTO "Result" (id, "queryId", "decryptedData", "proofHash", "createdAt")
+            VALUES (${resultId}, ${id}, ${body.decryptedData || 'Inference complete.'}, ${body.proofHash}, NOW())
+            ON CONFLICT ("queryId") DO NOTHING
+          `;
+        }
       }
     }
     
