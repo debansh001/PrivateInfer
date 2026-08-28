@@ -57,6 +57,19 @@ export default function AdminPage() {
     );
   }
 
+  // Optional: Restrict to a specific admin wallet
+  const adminWallet = process.env.NEXT_PUBLIC_ADMIN_WALLET;
+  const userWallet = session?.providers?.walletProvider?.getCoinPublicKey();
+  
+  if (adminWallet && userWallet && adminWallet.toLowerCase() !== userWallet.toLowerCase()) {
+    return (
+      <div className="container mx-auto p-12 max-w-sm text-center">
+        <h1 className="text-3xl font-bold mb-4 text-red-500">Access Denied</h1>
+        <p>Your connected wallet is not authorized as an administrator.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4 md:p-12 text-center">
       <h1 className="text-3xl font-bold mb-4">Admin Setup</h1>
