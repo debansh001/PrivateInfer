@@ -15,6 +15,20 @@ export default function AdminPage() {
   const { isConnected, session, connect } = useWallet();
   const [address, setAddress] = useState<string | null>(null);
 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Use environment variable for password, fallback to 'midnight2026' for hackathon convenience
+    const correctPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "midnight2026";
+    if (password === correctPassword) {
+      setIsAuthenticated(true);
+    } else {
+      alert("Incorrect password");
+    }
+  };
+
   const getCompiledContract = () => {
     return CompiledContract.make('privateinfer', Contract).pipe(
       CompiledContract.withWitnesses({
@@ -44,28 +58,33 @@ export default function AdminPage() {
     }
   };
 
+  if (!isAuthenticated) {
+    return (
+      <div className="container mx-auto p-12 max-w-sm text-center">
+        <h1 className="text-3xl font-bold mb-4">Admin Login</h1>
+        <form onSubmit={handleLogin} className="flex flex-col gap-4">
+          <input 
+            type="password" 
+            placeholder="Enter Admin Password" 
+            className="border p-2 rounded text-foreground bg-background"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button type="submit">Login</Button>
+        </form>
+      </div>
+    );
+  }
+
   if (!isConnected) {
     return (
       <div className="container mx-auto p-12 max-w-sm text-center">
         <h1 className="text-3xl font-bold mb-4">Admin Setup</h1>
         <div className="flex flex-col items-center gap-4 p-8 border border-border rounded-lg bg-surface">
           <Shield className="w-12 h-12 text-muted-foreground/40" />
-          <p className="text-muted-foreground text-sm">Connect your 1AM wallet to access the admin panel.</p>
+          <p className="text-muted-foreground text-sm">Connect your 1AM wallet to deploy the marketplace contract.</p>
           <Button onClick={() => connect('preview')}>Connect Wallet</Button>
         </div>
-      </div>
-    );
-  }
-
-  // Optional: Restrict to a specific admin wallet
-  const adminWallet = process.env.NEXT_PUBLIC_ADMIN_WALLET;
-  const userWallet = session?.providers?.walletProvider?.getCoinPublicKey();
-  
-  if (adminWallet && userWallet && adminWallet.toLowerCase() !== userWallet.toLowerCase()) {
-    return (
-      <div className="container mx-auto p-12 max-w-sm text-center">
-        <h1 className="text-3xl font-bold mb-4 text-red-500">Access Denied</h1>
-        <p>Your connected wallet is not authorized as an administrator.</p>
       </div>
     );
   }
