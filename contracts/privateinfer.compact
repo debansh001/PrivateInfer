@@ -30,6 +30,7 @@ export struct Query {
 }
 
 export ledger queries: Map<Bytes<32>, Query>;
+export ledger providerBalances: Map<Bytes<32>, Uint<64>>;
 
 witness callerAddress(): Bytes<32>;
 
@@ -86,8 +87,14 @@ export circuit releasePayment(queryId: Bytes<32>): [] {
   const caller = callerAddress();
   assert(disclose(caller) == query.creator, "Not the creator");
   
-  // In a real implementation this would transfer tokens to providerAddr.
-  // We update the status flag to represent the escrow being released.
+  // Transfer 100 units of escrowed value to the provider's balance
+  let currentBalance: Uint<64> = 0;
+  if (providerBalances.member(query.provider)) {
+    currentBalance = providerBalances.lookup(query.provider);
+  }
+  providerBalances.insert(query.provider, currentBalance + 100);
+
+  // Update the status flag to represent the escrow being released.
   const updatedQuery = Query {
     creator: query.creator,
     provider: query.provider,
