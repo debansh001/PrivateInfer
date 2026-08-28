@@ -90,9 +90,9 @@ export circuit releasePayment(queryId: Bytes<32>): [] {
   // Transfer 100 units of escrowed value to the provider's balance
   if (providerBalances.member(query.provider)) {
     const currentBalance = providerBalances.lookup(query.provider);
-    providerBalances.insert(query.provider, currentBalance + 100);
+    providerBalances.insert(query.provider, (currentBalance + 100) as Uint<64>);
   } else {
-    providerBalances.insert(query.provider, 100);
+    providerBalances.insert(query.provider, 100 as Uint<64>);
   }
 
   // Update the status flag to represent the escrow being released.
