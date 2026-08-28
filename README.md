@@ -93,7 +93,7 @@ Here is the step-by-step visual flow of the PrivateInfer application:
 Our compact smart contract securely manages the escrow lifecycle, enforces state transitions, and verifies Zero-Knowledge proofs for AI inference. 
 
 **Main Contract Address (Midnight Preview Network):** 
-[a12de258a554063149957bc7386cefa2e163ddcb7cb25331b357f1b8778f183c](https://explorer.preview.midnight.network/contracts/stream/a12de258a554063149957bc7386cefa2e163ddcb7cb25331b357f1b8778f183c)
+[36143414308955dbbc360fb9b084e33dfa67c7691b13b9bec3afb22912fe1c69](https://explorer.preview.midnight.network/contracts/stream/36143414308955dbbc360fb9b084e33dfa67c7691b13b9bec3afb22912fe1c69)
 
 ### 🔗 Sample Midnight Preview Network Transactions
 * 🟢 **Create Query:** [ab8607371723...](https://explorer.1am.xyz/tx/ab860737172342dd59ac880ac25230579a92e8171c6a7e77dd5f706ff33304fd?network=preview)
