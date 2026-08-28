@@ -41,11 +41,12 @@ Before users can create queries, the master smart contract must be deployed.
 ## 4. Releasing the Payment (As a User / Hospital)
 1. Return to the **Query Details Page** (or refresh it).
 2. You will see that the smart contract has successfully verified the provider's ZK-Proof.
-3. The page will dynamically display the **"✨ Decrypted AI Output"** mock response.
+3. The page will dynamically display the **"✨ Decrypted AI Output"** secure response.
 4. Because the ZK-Proof mathematically guarantees the AI model was run correctly without tampering, you can confidently click the **Release Payment** button.
 5. Approve the final transaction in your wallet.
 6. The smart contract successfully releases the tDUST escrow to the Provider. 
 
 The lifecycle is complete!
+
 
 

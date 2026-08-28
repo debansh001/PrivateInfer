@@ -21,23 +21,19 @@
 > [!IMPORTANT]
 > **Network Notice:** This application and its smart contracts are currently deployed exclusively on the **Midnight Preview Network**. All transactions, zero-knowledge proofs, and escrow mechanisms occur on the Preview testnet environment.
 
-<div align="left">
+### 🔗 Important Links
 
-| 🚀 Key Resources |
-| :---: |
-| 🌍 **[Live Deployment](https://private-infer.vercel.app/)** |
-| 🎥 **[Demo Video](https://youtu.be/w2uHJ5s_E6I)** |
-| 𝕏 **[X / Twitter Profile](https://x.com/private_infer)** |
+- **Live Preview Demo**: [https://private-infer.vercel.app/](https://private-infer.vercel.app/) *(Live PrivateInfer Application on Preview)*
+- **GitHub Repository**: [https://github.com/debansh001/PrivateInfer](https://github.com/debansh001/PrivateInfer)
+- **Product X (Twitter)**: [https://x.com/private_infer](https://x.com/private_infer) *(Official PrivateInfer X Profile)*
+- **Demo Video**: [https://youtu.be/w2uHJ5s_E6I](https://youtu.be/w2uHJ5s_E6I) *(Watch the PrivateInfer MVP Demo)*
 
-<br/>
+### 📚 Documentation
 
-| 📚 Documentation |
-| :---: |
-| 🛠️ **[Setup Guide](SETUP.md)** |
-| 📖 **[Usage Guide](USAGE.md)** |
-| 📄 **[Project Proposal](PROPOSAL.md)** |
+- **Setup Guide**: [SETUP.md](SETUP.md) *(Local Development Guide)*
+- **Usage Guide**: [USAGE.md](USAGE.md) *(Application Usage Instructions)*
+- **Project Proposal**: [PROPOSAL.md](PROPOSAL.md) *(PrivateInfer Architecture Proposal)*
 
-</div>
 
 <br />
 

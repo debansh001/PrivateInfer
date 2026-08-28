@@ -38,6 +38,7 @@ Midnight is the only network capable of supporting this architecture gracefully 
 ## 5. Hackathon Scope & Deliverables
 * **Smart Contract:** A .compact smart contract deployed on the Midnight Preview Testnet that handles the escrow lifecycle and verifies ZK-proofs.
 * **Query Maker UI:** A Next.js interface for users to deploy queries, commit hashes, and release payments via the 1AM Wallet.
-* **AI Provider Hub:** A dashboard for AI nodes to claim queries, mock the secure off-chain execution, and submit the ZK-Proof back to the blockchain.
+* **AI Provider Hub:** A dashboard for AI nodes to claim queries, perform the secure off-chain execution, and submit the ZK-Proof back to the blockchain.
+
 
 
