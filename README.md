@@ -23,7 +23,7 @@
 
 ### 🔗 Important Links
 
-- **Live Preprod Demo**: [https://private-infer.vercel.app/](https://private-infer.vercel.app/) *(Live PrivateInfer Application on Preview)*
+- **Live Demo**: [https://private-infer.vercel.app/](https://private-infer.vercel.app/) *(Live PrivateInfer Application on Preview)*
 - **GitHub Repository**: [https://github.com/debansh001/PrivateInfer](https://github.com/debansh001/PrivateInfer)
 - **Product X (Twitter)**: [https://x.com/private_infer](https://x.com/private_infer) *(Official PrivateInfer X Profile)*
 - **Demo Video**: [https://youtu.be/w2uHJ5s_E6I](https://youtu.be/w2uHJ5s_E6I) *(Watch the PrivateInfer MVP Demo)*
