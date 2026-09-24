@@ -23,5 +23,16 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
+    - name: Install Compact Compiler
+      run: |
+        curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+        
+    - name: Compile Compact Contracts
+      run: |
+        export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+        compact update
+        cd contracts
+        compact compile privateinfer.compact managed/privateinfer
+
     - name: Run TypeScript Compiler (no emit)
       run: npm run typecheck

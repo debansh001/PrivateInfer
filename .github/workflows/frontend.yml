@@ -1,4 +1,4 @@
-﻿name: Frontend CI
+name: Frontend CI
 
 on:
   push:
@@ -22,6 +22,17 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
+
+    - name: Install Compact Compiler
+      run: |
+        curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+        
+    - name: Compile Compact Contracts
+      run: |
+        export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+        compact update
+        cd contracts
+        compact compile privateinfer.compact managed/privateinfer
 
     - name: Run Linter
       run: npm run lint
