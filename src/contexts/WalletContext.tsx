@@ -38,7 +38,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     return () => clearInterval(id);
   }, []);
 
-  const connect = useCallback(async (network = 'preview') => {
+  const connect = useCallback(async (network = process.env.NEXT_PUBLIC_MIDNIGHT_NETWORK || 'preprod') => {
     if (connectingRef.current) return;
     connectingRef.current = true;
     setIsConnecting(true);
