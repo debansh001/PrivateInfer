@@ -1,34 +1,61 @@
+"use client";
+
 import Link from "next/link";
-import Image from "next/image";
-import { Network } from "lucide-react";
-import WalletConnect from "./WalletConnect";
+import { Button } from "@/components/ui/button";
+import { Lock, Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export function Header() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Avoid hydration mismatch — only render theme icon after mount
+  useEffect(() => setMounted(true), []);
+
   return (
-    <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="bg-accent-primary/10 p-1.5 rounded-md border border-accent-primary/20">
-              <Image src="/logo.png" alt="PrivateInfer Logo" width={24} height={24} className="w-5 h-5 object-contain" />
-            </div>
-            <span className="font-display font-bold text-xl tracking-tight hidden sm:inline-block">PrivateInfer</span>
+    <header className="border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-40">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 rounded-md bg-accent-primary flex items-center justify-center text-primary-foreground transition-transform group-hover:scale-105">
+            <Lock className="w-4 h-4" />
+          </div>
+          <span className="font-display font-bold text-xl tracking-tight">PrivateInfer</span>
+        </Link>
+
+        <nav className="flex items-center gap-6 text-sm font-medium">
+          <Link href="/query/new" className="text-muted-foreground hover:text-primary transition-colors">
+            Submit Query
           </Link>
-          <nav className="flex items-center gap-3 md:gap-6 ml-2 md:ml-0">
-            <Link href="/provider" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
-              Provider Hub
-            </Link>
-            <div className="hidden md:flex items-center gap-2 text-sm font-medium text-muted-foreground">
-              <Network className="w-4 h-4" />
-              <span className="px-2 py-0.5 rounded-full bg-surface-raised border border-border text-xs font-mono">
-                Midnight Preview
-              </span>
-            </div>
-          </nav>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <WalletConnect />
+          <Link href="/provider" className="text-muted-foreground hover:text-primary transition-colors">
+            Providers
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-3">
+          {/* Dark / Light mode toggle */}
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="w-9 h-9 flex items-center justify-center rounded-md border border-border bg-surface hover:bg-surface-raised transition-colors"
+            aria-label="Toggle theme"
+          >
+            {mounted ? (
+              theme === "dark" ? (
+                <Sun className="w-4 h-4 text-muted-foreground" />
+              ) : (
+                <Moon className="w-4 h-4 text-muted-foreground" />
+              )
+            ) : (
+              <div className="w-4 h-4" />
+            )}
+          </button>
+
+          <Link
+            href="/query/new"
+            className="inline-flex items-center justify-center rounded-md border border-accent-primary text-accent-primary hover:bg-accent-primary/10 px-4 py-2 text-sm font-medium transition-colors"
+          >
+            Connect Wallet
+          </Link>
         </div>
       </div>
     </header>
