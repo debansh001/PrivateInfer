@@ -20,12 +20,15 @@ export default function AdminPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Use environment variable for password, fallback to 'midnight2026' for hackathon convenience
-    const correctPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "midnight2026";
+    const correctPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+    if (!correctPassword) {
+      alert("Admin panel is not configured. Set NEXT_PUBLIC_ADMIN_PASSWORD in your environment variables.");
+      return;
+    }
     if (password === correctPassword) {
       setIsAuthenticated(true);
     } else {
-      alert("Incorrect password");
+      alert("Incorrect password.");
     }
   };
 
@@ -83,7 +86,7 @@ export default function AdminPage() {
         <div className="flex flex-col items-center gap-4 p-8 border border-border rounded-lg bg-surface">
           <Shield className="w-12 h-12 text-muted-foreground/40" />
           <p className="text-muted-foreground text-sm">Connect your 1AM wallet to deploy the marketplace contract.</p>
-          <Button onClick={() => connect('preview')}>Connect Wallet</Button>
+          <Button onClick={() => connect()}>Connect Wallet</Button>
         </div>
       </div>
     );
