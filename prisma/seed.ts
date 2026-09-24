@@ -5,12 +5,20 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Seeding database...");
 
-  // Clean existing data
+  // 🔴 CRITICAL PRE-PROD GUARD 🔴
+  // Prevent seeding (and DB wipes) in production environments
+  if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production') {
+    console.error("FATAL: Refusing to run seed script in a production environment!");
+    console.error("This script wipes data and inserts mock/dummy AI feedback and fake hashes.");
+    process.exit(1);
+  }
+
+  // Clean existing data (DEV ONLY)
   await prisma.result.deleteMany();
   await prisma.query.deleteMany();
   await prisma.provider.deleteMany();
 
-  // Create Provider
+  // Create Provider (DEV ONLY fake hashes)
   const provider1 = await prisma.provider.create({
     data: {
       name: "pi-medical-v1.0",
