@@ -3,6 +3,8 @@ import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { WalletProvider } from "@/contexts/WalletContext";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -30,14 +32,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <body className="antialiased min-h-screen bg-background text-primary font-sans flex flex-col">
-        <WalletProvider>
-          <Header />
-          <div className="flex-1 flex flex-col">
-            {children}
-          </div>
-        </WalletProvider>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <WalletProvider>
+            <Header />
+            <div className="flex-1 flex flex-col">
+              {children}
+            </div>
+            <Toaster richColors position="bottom-right" />
+          </WalletProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
