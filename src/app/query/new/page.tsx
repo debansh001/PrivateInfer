@@ -78,7 +78,7 @@ export default function SubmitQueryPage() {
     e.preventDefault();
     if (!query) return;
     if (!isConnected || !session) {
-      await connect('preview');
+      await connect();
       return; 
     }
     
@@ -174,7 +174,7 @@ export default function SubmitQueryPage() {
           </CardContent>
           <CardFooter className="flex gap-4 justify-center bg-surface-raised/50 border-t border-border pt-6 pb-8">
             <a
-              href="https://explorer.preview.midnight.network/"
+              href={`https://explorer.${process.env.NEXT_PUBLIC_MIDNIGHT_NETWORK || 'preprod'}.midnight.network/`}
               target="_blank"
               rel="noopener noreferrer"
               style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "8px", border: "1px solid var(--accent-primary, #7c3aed)", color: "var(--accent-primary, #7c3aed)", fontSize: "14px", fontWeight: 500, textDecoration: "none", cursor: "pointer" }}
@@ -248,7 +248,7 @@ export default function SubmitQueryPage() {
                 type="button" 
                 variant="outline"
                 className="border-accent-primary text-accent-primary hover:bg-accent-primary/10"
-                onClick={() => connect('preview')}
+                onClick={() => connect()}
               >
                 Connect 1AM Wallet to Deploy
               </Button>

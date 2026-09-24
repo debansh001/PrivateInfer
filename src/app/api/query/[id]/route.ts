@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@/lib/prisma";
 
@@ -45,7 +45,7 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
-    // Validate status transitions — only allow forward movement in the lifecycle
+    // Validate status — only allow known lifecycle values
     const VALID_STATUSES = ['PROCESSING', 'RESULT_READY', 'PAID', 'FAILED'];
     if (body.status && !VALID_STATUSES.includes(body.status)) {
       return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
@@ -53,21 +53,26 @@ export async function PATCH(
 
     if (body.status) {
       await sql`UPDATE "Query" SET status = ${body.status}::"QueryStatus", "updatedAt" = NOW() WHERE id = ${id}`;
-      
+
       // Only insert a Result record if we're moving to RESULT_READY AND no result exists yet
       if (body.status === "RESULT_READY" && body.proofHash) {
         const existing = await sql`SELECT id FROM "Result" WHERE "queryId" = ${id} LIMIT 1`;
         if (existing.length === 0) {
-          const resultId = Math.random().toString(36).substring(2, 15);
+          // Use crypto.randomUUID() — cryptographically secure and collision-resistant
+          const resultId = crypto.randomUUID();
+          // Require real decryptedData — do not silently insert placeholder text
+          if (!body.decryptedData) {
+            return NextResponse.json({ error: "Missing decryptedData for RESULT_READY status" }, { status: 400 });
+          }
           await sql`
             INSERT INTO "Result" (id, "queryId", "decryptedData", "proofHash", "createdAt")
-            VALUES (${resultId}, ${id}, ${body.decryptedData || 'Inference complete.'}, ${body.proofHash}, NOW())
+            VALUES (${resultId}, ${id}, ${body.decryptedData}, ${body.proofHash}, NOW())
             ON CONFLICT ("queryId") DO NOTHING
           `;
         }
       }
     }
-    
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("API Error:", error);

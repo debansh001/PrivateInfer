@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Shield, CheckCircle2, CircleDashed, CheckCircle, ExternalLink, AlertTriangle } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
+import { toast } from "sonner";
 
 import { Contract } from '../../../../contracts/managed/privateinfer/contract/index.js';
 import { createUnprovenCallTx, submitTxAsync } from '@midnight-ntwrk/midnight-js-contracts';
@@ -77,7 +78,7 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
 
   const handleReleasePayment = async () => {
     if (!isConnected || !session) {
-      await connect('preview');
+      await connect();
       return;
     }
     
@@ -109,10 +110,10 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
       });
 
       setStatus("PAID");
-      alert("Payment Released Successfully!");
+      toast.success("Payment Released Successfully!");
     } catch (e: any) {
       console.error(e);
-      alert("Failed to release payment: " + (e.message || e));
+      toast.error("Failed to release payment: " + (e.message || e));
     } finally {
       setIsReleasing(false);
     }
@@ -178,7 +179,7 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
                         className="text-xs font-mono mt-2 text-accent-primary flex items-center gap-1 cursor-pointer hover:underline"
                         onClick={() => {
                           navigator.clipboard.writeText(typeof step.hash === 'string' ? step.hash : "");
-                          alert("Copied hash to clipboard! Paste it in your 1AM wallet or Midnight Explorer.");
+                          toast.success("Copied hash to clipboard!");
                         }}
                       >
                         {typeof step.hash === 'string' ? step.hash.slice(0, 10) : "Hash..."} 
