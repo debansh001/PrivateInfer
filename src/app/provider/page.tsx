@@ -104,7 +104,7 @@ export default function ProviderDashboard() {
 
   const handleSubmitResult = async (queryIdHex: string) => {
     if (!isConnected || !session) {
-      await connect('preview');
+      await connect();
       return;
     }
 
@@ -217,7 +217,7 @@ export default function ProviderDashboard() {
           <ShieldCheck className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
           <h3 className="font-bold mb-2">Wallet Required</h3>
           <p className="text-muted-foreground mb-6">Connect your 1AM wallet to view and fulfill on-chain inference requests.</p>
-          <Button onClick={() => connect('preview')} className="bg-accent-primary">Connect 1AM Wallet</Button>
+          <Button onClick={() => connect()} className="bg-accent-primary">Connect 1AM Wallet</Button>
         </Card>
       </main>
     );
@@ -242,7 +242,7 @@ export default function ProviderDashboard() {
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setSuccessfulTx(null)}>Close</Button>
             <a
-              href="https://explorer.preview.midnight.network/"
+              href={`https://explorer.${process.env.NEXT_PUBLIC_MIDNIGHT_NETWORK || 'preprod'}.midnight.network/`}
               target="_blank"
               rel="noopener noreferrer"
               style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 14px", borderRadius: "8px", background: "var(--accent-primary, #7c3aed)", color: "#fff", fontSize: "14px", fontWeight: 500, textDecoration: "none", cursor: "pointer" }}
