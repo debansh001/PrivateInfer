@@ -126,15 +126,6 @@ c3e5cfedf63b54f2004755385a3ac638301c56d66b90002b883224c424222bae
 #### 2. Successful Deployment
 <img src="assets/SMART-CONTRACTS/contracts-deploy.png" width="800"/><br/><br/>
 
-#### 3. ZK Proof: Create Query
-<img src="assets/SMART-CONTRACTS/create-query.png" width="800"/><br/><br/>
-
-#### 4. ZK Proof: Submit Result
-<img src="assets/SMART-CONTRACTS/submit-result.png" width="800"/><br/><br/>
-
-#### 5. ZK Proof: Release Payment
-<img src="assets/SMART-CONTRACTS/release-payment.png" width="800"/>
-
 ---
 
 ## 🏗️ Architecture
