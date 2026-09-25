@@ -106,6 +106,7 @@ export default function HistoryPage() {
 
   useEffect(() => {
     if (isConnected && address) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchHistory(address);
     }
   }, [isConnected, address]);

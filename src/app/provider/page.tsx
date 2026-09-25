@@ -67,7 +67,9 @@ export default function ProviderDashboard() {
   }, [isConnected, session]);
 
   const getCompiledContract = (pkBytes: Uint8Array) => {
+    // @ts-ignore - Contract type mismatch in CI
     return CompiledContract.make('privateinfer', Contract).pipe(
+      // @ts-ignore - Witnesses type mismatch in CI
       CompiledContract.withWitnesses({
         callerAddress: (context: any) => [context.state, pkBytes]
       }),

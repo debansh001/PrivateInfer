@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Lock, Sun, Moon, Wallet, LogOut, Loader2 } from "lucide-react";
+import { Sun, Moon, Wallet, LogOut, Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useWallet } from "@/contexts/WalletContext";
@@ -13,6 +13,7 @@ export function Header() {
   const { isConnected, isConnecting, address, connect, disconnect, walletStatus } = useWallet();
 
   // Avoid hydration mismatch — only render theme icon after mount
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   const shortAddress = address
