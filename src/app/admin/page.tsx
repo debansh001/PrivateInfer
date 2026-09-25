@@ -18,7 +18,7 @@ import {
 import { useWallet } from "@/contexts/WalletContext";
 import { Button } from "@/components/ui/button";
 import { createUnprovenDeployTx, submitTxAsync } from "@midnight-ntwrk/midnight-js-contracts";
-import { sampleSigningKey } from "@midnight-ntwrk/compact-runtime";
+
 import { CompiledContract } from "@midnight-ntwrk/compact-js";
 import { Contract } from "../../../contracts/managed/privateinfer/contract/index.js";
 
@@ -440,7 +440,7 @@ function DeployTab() {
       const deployTxData = await createUnprovenDeployTx(session.providers as any, {
         compiledContract: getCompiledContract(),
         args: [],
-        signingKey: sampleSigningKey(),
+        signingKey: Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2, '0')).join(''),
       });
       await submitTxAsync(session.providers as any, {
         unprovenTx: deployTxData.private.unprovenTx,

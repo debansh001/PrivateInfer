@@ -13,7 +13,7 @@
     "test": "jest"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

@@ -11,7 +11,7 @@ import { Lock, FileText, ArrowRight, ShieldCheck, ExternalLink, Activity } from 
 import Link from "next/link";
 
 import { createUnprovenCallTx, submitTxAsync } from '@midnight-ntwrk/midnight-js-contracts';
-import { sampleSigningKey } from '@midnight-ntwrk/compact-runtime';
+
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
 
 import { Contract } from '../../../../contracts/managed/privateinfer/contract/index.js';
@@ -88,8 +88,7 @@ export default function SubmitQueryPage() {
     setError(null);
     
     try {
-      await new Promise(r => setTimeout(r, 800));
-      
+
       // Hash the query text client-side using SHA-256.
       // This is the commitment: the raw query never leaves the browser.
       // The hash is used as the on-chain commitmentHash in the Compact contract.
