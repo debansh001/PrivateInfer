@@ -28,6 +28,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^17.4.2",
+    "esbuild": "^0.28.2",
     "framer-motion": "^13.4.3",
     "groq-sdk": "^1.6.0",
     "isomorphic-ws": "^5.0.0",
