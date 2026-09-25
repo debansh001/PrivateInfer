@@ -40,6 +40,9 @@ export function Header() {
           <Link href="/provider" className="text-muted-foreground hover:text-primary transition-colors">
             Providers
           </Link>
+          <Link href="/history" className="text-muted-foreground hover:text-primary transition-colors">
+            History
+          </Link>
         </nav>
 
         <div className="flex items-center gap-3">
