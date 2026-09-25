@@ -3,6 +3,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import type { ConnectedSession } from '../lib/midnight';
+import { toast } from "sonner";
 
 type WalletContextType = {
   address: string | null;
@@ -45,6 +46,12 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     try {
       const wallet = (window as any).midnight?.['1am'] ?? (window as any).midnight?.mnLace;
       if (!wallet) throw new Error('No wallet found');
+      
+      const is1am = !!(window as any).midnight?.['1am'];
+      if (!is1am || network !== 'preprod') {
+        toast.info("Note: PrivateInfer currently only supports the Midnight PREPROD network.");
+      }
+
       const api = await wallet.connect(network);
       const { createConnectedSession } = await import('../lib/midnight');
       const sess = await createConnectedSession(api);
