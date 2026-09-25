@@ -3,11 +3,11 @@
 
   # 🔒 PrivateInfer
 
-  **Secure, Trustless Off-Chain AI Inference Powered by Midnight Preview Network's Zero-Knowledge Proofs.**
+  **Confidential AI Inference Marketplace — Powered by Midnight Blockchain's Zero-Knowledge Proofs.**
 
-  [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
+  [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
-  [![Midnight](https://img.shields.io/badge/Midnight-Compact-purple?logo=polkadot)](https://midnight.network/)
+  [![Midnight](https://img.shields.io/badge/Midnight-PREPROD-purple)](https://midnight.network/)
   [![Prisma](https://img.shields.io/badge/Prisma-Neon_DB-1A202C?logo=prisma)](https://www.prisma.io/)
   [![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
   <br/>
@@ -19,60 +19,72 @@
 <br />
 
 > [!IMPORTANT]
-> **Network Notice:** This application and its smart contracts are currently deployed exclusively on the **Midnight Preview Network**. All transactions, zero-knowledge proofs, and escrow mechanisms occur on the Preview testnet environment.
+> **Network Notice:** This application and its smart contracts are deployed on the **Midnight PREPROD Network**. Connect with the **1AM Wallet** (`mn_shield` browser extension) set to the `preprod` network. Lace Wallet is not currently supported.
 
 ### 🔗 Important Links
 
-- **Live Demo**: [https://private-infer.vercel.app/](https://private-infer.vercel.app/) *(Live PrivateInfer Application on Preview)*
-- **Product Pitch Deck**: [PrivateInfer Product Pitch](https://docs.google.com/presentation/d/1mBxabZTKyCVx-Ypih9RdAD63pP5EFaDJ/edit?usp=sharing&ouid=117555019266338524733&rtpof=true&sd=true) *(Google Slide Link)*
-- **Product X (Twitter)**: [https://x.com/private_infer](https://x.com/private_infer) *(Official PrivateInfer X Profile)*
-- **Demo Video**: [https://youtu.be/w2uHJ5s_E6I](https://youtu.be/w2uHJ5s_E6I) *(Watch the PrivateInfer MVP Demo)*
+- **Live Demo**: [https://private-infer.vercel.app/](https://private-infer.vercel.app/)
+- **Product Pitch Deck**: [PrivateInfer Product Pitch](https://docs.google.com/presentation/d/1mBxabZTKyCVx-Ypih9RdAD63pP5EFaDJ/edit?usp=sharing&ouid=117555019266338524733&rtpof=true&sd=true)
+- **Product X (Twitter)**: [https://x.com/private_infer](https://x.com/private_infer)
+- **Demo Video**: [https://youtu.be/w2uHJ5s_E6I](https://youtu.be/w2uHJ5s_E6I)
 
 ### 📚 Documentation
 
-- **Setup Guide**: [SETUP.md](SETUP.md) *(Local Development Guide)*
-- **Usage Guide**: [USAGE.md](USAGE.md) *(Application Usage Instructions)*
-- **Project Proposal**: [PROPOSAL.md](PROPOSAL.md) *(PrivateInfer Architecture Proposal)*
-
+| Document | Description |
+|---|---|
+| [SETUP.md](SETUP.md) | Local development setup guide |
+| [USAGE.md](USAGE.md) | Application usage instructions |
+| [PROPOSAL.md](PROPOSAL.md) | PrivateInfer architecture proposal |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | **Full system architecture** — contracts, API, DB schema, ZK flows |
+| [docs/USERS.md](docs/USERS.md) | Verified beta tester directory (70 participants) |
+| [FEEDBACK.md](FEEDBACK.md) | Beta tester raw feedback + implemented changes |
 
 <br />
 
-## 💡 About the Product Idea
+## 💡 About the Product
 
 ### ❌ The Problem
-As AI becomes integral to enterprise operations, industries dealing with highly sensitive data (like Healthcare, Finance, and Legal) face a massive roadblock: **Data Privacy**. 
-If a hospital wants to use an advanced AI model to analyze a patient's medical history for early disease detection, they cannot simply send this data to a public LLM like ChatGPT or put it on a public blockchain. Doing so exposes confidential data, violates compliance laws (like HIPAA), and destroys user trust. 
+Industries dealing with sensitive data (Healthcare, Finance, Legal) cannot safely send it to public AI models. Doing so exposes confidential data, violates compliance laws (HIPAA), and destroys user trust.
 
 ### ✅ The Solution
-**PrivateInfer** leverages the Midnight Preview Network to solve this problem by providing a trustless marketplace for secure, off-chain AI inference. 
-1. **Encrypted Inputs:** The Query Maker (e.g., a Hospital) submits highly sensitive, encrypted data.
-2. **Secure Processing:** A decentralized AI Provider Node picks up the task and processes the data strictly inside a secure "black box" (a Trusted Execution Environment / TEE).
-3. **Zero-Knowledge Proofs:** The AI Provider submits the result back to the Midnight smart contract along with a ZK-Proof. This mathematically guarantees to the hospital that the AI model was run exactly as requested—**without ever revealing the patient's data or the result on the public ledger.**
-4. **Trustless Escrow:** The smart contract automatically manages the escrow and releases the tDUST payment only when a valid proof is verified on-chain.
+**PrivateInfer** provides a trustless marketplace for secure, off-chain AI inference on the Midnight blockchain:
+
+1. **Encrypted Inputs:** The Query Maker submits sensitive, encrypted data — only a commitment hash ever touches the chain.
+2. **Secure Processing:** A decentralized AI Provider Node processes the data off-chain via Groq-powered inference inside a secure environment.
+3. **Zero-Knowledge Proofs:** The Provider submits a ZK-proof to the Midnight smart contract, mathematically guaranteeing the AI ran correctly — **without revealing the data or result on the public ledger.**
+4. **Trustless Escrow:** The smart contract automatically releases tDUST payment only after the proof is verified on-chain.
 
 ---
 
-## 🛡️ Public State vs. Private Witness in PrivateInfer
+## 🛡️ Privacy Model — Public vs. Private
 
-PrivateInfer's smart contract (contracts/privateinfer.compact) expertly uses Midnight's programming model to separate what the network knows from what the network verifies.
+| | Public State (On-Chain) | Private Witness (Off-Chain) |
+|---|---|---|
+| **Query** | SHA-256 commitment hash only | Actual query text — never leaves client |
+| **Result** | SHA-256 proof hash only | Decrypted AI response — stored in encrypted DB |
+| **Identity** | Opaque public key bytes | Caller identity verified via ZK `disclose()` — not exposed |
+| **Escrow** | tDUST balance visible | Transfer amount derived from on-chain state |
 
-### 🌐 Public State (On-Chain)
-The public state only tracks opaque identifiers, cryptographically secure hashes, and escrow balances. 
-- **Query Commitment Hash:** The hash of the encrypted input data (preventing tampering).
-- **Result Hash:** The hash of the final AI inference output.
-- **Statuses:** State machine markers (e.g., Processing, ResultReady, Paid).
-- **Escrow:** The locked tDUST reward.
+---
 
-### 🕵️‍♂️ Private Witness (Off-Chain Execution)
-The actual sensitive data is handled strictly as private witnesses during local circuit execution.
-- **Caller Identity:** We assert disclose(caller) == query.creator inside local circuits to prevent unauthorized users from releasing payments, but the network only validates the proof, never exposing the caller's identity publicly.
-- **AI Payload:** The actual prompt and the AI's response remain entirely off-chain. The ZK-proof simply proves that the hash of the local result matches the commitment on-chain.
+## 🆕 Recent Updates (September 2026)
+
+### UI / UX Overhaul
+- **Full Product Landing Page** — Hero section, animated terminal widget, stats bar (70+ Beta Testers, 100% ZK Verified), How It Works (3-step flow), 6-card features grid, Provider CTA section, FAQ accordion, and a complete footer with nav links and copyright. *Commit [`94c8b69`](https://github.com/debansh001/PrivateInfer/commit/94c8b694a58cc98297fcdae101683ded63dbdfa4)*
+- **Admin Ops Dashboard** — Replaced the single deploy button with a full 4-tab monitoring dashboard: Live Stats, Queries table (color-coded status badges), Providers table, and a Contract Deploy tab with Midnight SDK. *Commit [`94c8b69`](https://github.com/debansh001/PrivateInfer/commit/94c8b694a58cc98297fcdae101683ded63dbdfa4)*
+- **Real Wallet Connect Button** — Header "Connect Wallet" now directly calls the wallet SDK (was previously just a navigation link). Shows connected address with live green pulse dot + disconnect button. *Commit [`54acd1b`](https://github.com/debansh001/PrivateInfer/commit/54acd1b106a5880645914c3de9d39fefcf0540b8)*
+- **Theme Toggle Fixed** — Light/dark mode now works correctly. Split CSS into proper `:root` (light) and `html.dark` (dark) blocks; fixed Tailwind v4 `@custom-variant dark` selector for `next-themes` compatibility. *Commit [`94c8b69`](https://github.com/debansh001/PrivateInfer/commit/94c8b694a58cc98297fcdae101683ded63dbdfa4)*
+- **Logo Displayed** — `public/logo.png` now shown in both the header and footer (was previously a generic icon). 
+
+### Beta Tester Feedback Fixes
+- **Copy Button** — Added one-click copy to the decrypted AI result output on `/query/[id]`. *Commit [`54acd1b`](https://github.com/debansh001/PrivateInfer/commit/54acd1b106a5880645914c3de9d39fefcf0540b8)*
+- **Processing Spinner** — Query submission page now shows an animated spinner and "Please do not refresh" message during ZK proof generation. *Commit [`89416df`](https://github.com/debansh001/PrivateInfer/commit/89416df85d7ecff4b92ba4038c9da64f9bcf0537)*
+- **Explorer Warning Banner** — The 1AM Explorer hint is now a prominent red `🚨 ATTENTION` banner so users don't miss it. *Commit [`89416df`](https://github.com/debansh001/PrivateInfer/commit/89416df85d7ecff4b92ba4038c9da64f9bcf0537)*
+- **Non-1AM Wallet Toast** — When Lace Wallet or wrong network is detected, a toast notification now explains PREPROD-only support. *Commit [`54acd1b`](https://github.com/debansh001/PrivateInfer/commit/54acd1b106a5880645914c3de9d39fefcf0540b8)*
 
 ---
 
 ## 📸 Product Screenshots
-
-Here is the step-by-step visual flow of the PrivateInfer application:
 
 | 1. Landing Page | 2. Creating a Secure Query |
 | :---: | :---: |
@@ -90,72 +102,74 @@ Here is the step-by-step visual flow of the PrivateInfer application:
 
 ## 📜 Smart Contracts
 
-Our compact smart contract securely manages the escrow lifecycle, enforces state transitions, and verifies Zero-Knowledge proofs for AI inference. 
+Our Compact smart contract manages escrow lifecycle, enforces state transitions, and verifies ZK proofs for AI inference.
 
-**Main Contract Address (Midnight Preview Network):** 
-[36143414308955dbbc360fb9b084e33dfa67c7691b13b9bec3afb22912fe1c69](https://explorer.preview.midnight.network/contracts/stream/36143414308955dbbc360fb9b084e33dfa67c7691b13b9bec3afb22912fe1c69)
+**Deployed Contract Address (Midnight PREPROD):**
+```
+c3e5cfedf63b54f2004755385a3ac638301c56d66b90002b883224c424222bae
+```
+[View on 1AM Explorer ↗](https://explorer.1am.xyz/contract/c3e5cfedf63b54f2004755385a3ac638301c56d66b90002b883224c424222bae?network=preprod)
 
-### 🔗 Sample Midnight Preview Network Transactions
-* 🟢 **Create Query:** [ab8607371723...](https://explorer.1am.xyz/tx/ab860737172342dd59ac880ac25230579a92e8171c6a7e77dd5f706ff33304fd?network=preview)
-* 🟡 **Submit Result & Proof:** [c7dfa24e3f66...](https://explorer.1am.xyz/tx/c7dfa24e3f66a80c7f6cc0dd0fe69cc8502cb8be1fbebfee96afa28d1772331d?network=preview)
-* 🔵 **Release Payment:** [8ab94e92e295...](https://explorer.1am.xyz/tx/8ab94e92e2957f9bd1ebe250a27529886178de5a7cd5a2f35a8c03a1c7142155?network=preview)
+### 🔗 Sample PREPROD Transactions
 
-### Contract Deployment & Verification Visuals
+| Circuit | Transaction |
+|---|---|
+| 🟢 **Create Query** | [`516b7b87...`](https://explorer.1am.xyz/tx/516b7b87e40f9a684aec47ab31eb57f655d232495539e2ea3a79ec30151ca8cb?network=preprod) |
+| 🟡 **Submit Result & Proof** | [`c7dfa24e...`](https://explorer.1am.xyz/tx/c7dfa24e3f66a80c7f6cc0dd0fe69cc8502cb8be1fbebfee96afa28d1772331d?network=preprod) |
+| 🔵 **Release Payment** | [`8ab94e92...`](https://explorer.1am.xyz/tx/8ab94e92e2957f9bd1ebe250a27529886178de5a7cd5a2f35a8c03a1c7142155?network=preprod) |
 
-Below are the visual proofs of our smart contract deployed and actively managing state on the Midnight Preview Network:
+### Contract Deployment Visuals
 
-#### 1. Contract Details
-Tracking the compiled privateinfer.compact contract and mapping it to the on-chain state.<br/>
+#### 1. Contract Circuits
 <img src="assets/SMART-CONTRACTS/circuits.png" width="800"/><br/><br/>
 
-#### 2. Successful Contract Deployment
-Proof of the PrivateInfer escrow contract initialized on the Midnight Preview Network.<br/>
+#### 2. Successful Deployment
 <img src="assets/SMART-CONTRACTS/contracts-deploy.png" width="800"/><br/><br/>
 
-#### 3. Zero-Knowledge Proof: Create Query
-Proof of a successful transaction securely modifying the public state to deploy the query.<br/>
+#### 3. ZK Proof: Create Query
 <img src="assets/SMART-CONTRACTS/create-query.png" width="800"/><br/><br/>
 
-#### 4. Zero-Knowledge Proof: Submit Result
-Proof of the AI Provider securely submitting the Zero-Knowledge verified result back to the network.<br/>
+#### 4. ZK Proof: Submit Result
 <img src="assets/SMART-CONTRACTS/submit-result.png" width="800"/><br/><br/>
 
-#### 5. Zero-Knowledge Proof: Release Payment
-Escrow payment release, verified by the private caller witness securely on-chain.<br/>
+#### 5. ZK Proof: Release Payment
 <img src="assets/SMART-CONTRACTS/release-payment.png" width="800"/>
 
 ---
 
-## 🏗️ Architecture & Workflow
+## 🏗️ Architecture
 
-### Project Architecture
+For the full technical architecture, see **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
+
+### High-Level Diagram
 
 ```mermaid
 graph TD
-    UI[Next.js Client UI] -->|Connects via| Wallet[1AM Wallet]
-    UI -->|Polls Metadata| DB[(Neon PostgreSQL DB)]
-    Wallet -->|Submits ZK Proofs & Txs| Midnight[Midnight Preview Network]
+    UI[Next.js Client UI] -->|Connects via| Wallet[1AM Wallet - mn_shield]
+    UI -->|Polls Metadata| DB[(Neon PostgreSQL)]
+    Wallet -->|Submits ZK Proofs| Midnight[Midnight PREPROD Network]
     Midnight -->|Verifies Proofs| SC[Compact Smart Contract]
-    ProviderNode[AI Provider Node - TEE] -->|Reads Hash| Midnight
-    ProviderNode -->|Pushes Off-chain Data| DB
-    ProviderNode -->|Submits Result ZKP| Midnight
+    ProviderNode[AI Provider Node] -->|Reads Queue| Redis[(Upstash Redis)]
+    ProviderNode -->|Calls Groq API| Groq[Groq LLM]
+    ProviderNode -->|Stores Result| DB
+    ProviderNode -->|Submits ZKP| Midnight
 ```
 
-### User-Side Workflow
+### User Workflow
 
 ```mermaid
 sequenceDiagram
     participant U as User (Query Maker)
     participant SC as Midnight Smart Contract
-    participant P as AI Provider (TEE)
+    participant P as AI Provider
 
     U->>SC: 1. Deploy Query (Lock tDUST, Commit Hash)
-    SC-->>P: 2. Network Emits Event
-    P->>P: 3. Decrypt & Run AI Inference inside TEE
+    SC-->>P: 2. Provider picks up job via Redis
+    P->>P: 3. Run AI Inference (Groq API)
     P->>SC: 4. Submit ZK Proof & Result Hash
-    SC->>SC: 5. Verify Proof (State -> RESULT_READY)
+    SC->>SC: 5. Verify Proof → RESULT_READY
     U->>SC: 6. Verify Result & Release Payment
-    SC-->>P: 7. Transfer tDUST Escrow to Provider
+    SC-->>P: 7. Transfer tDUST Escrow
 ```
 
 ---
@@ -164,54 +178,101 @@ sequenceDiagram
 
 ```text
 PrivateInfer/
-├── contracts/               # Midnight Compact Smart Contracts
-│   ├── privateinfer.compact # Core logic for ZK verification & Escrow
-│   └── managed/              # Compiled TS/WASM outputs from Compact compiler
-├── prisma/                  # Database Schema & Migrations
-│   └── schema.prisma        # Postgres models (Query, Provider, Result)
+├── contracts/                  # Midnight Compact Smart Contracts
+│   ├── privateinfer.compact    # Core ZK verification & escrow logic
+│   └── managed/                # Compiled TS/WASM outputs
+├── docs/                       # Documentation
+│   ├── ARCHITECTURE.md         # Full system architecture
+│   └── USERS.md                # Verified beta testers directory (70 wallets)
+├── prisma/                     # Database
+│   └── schema.prisma           # PostgreSQL models (Query, Provider, Result)
+├── scripts/
+│   └── worker.ts               # Off-chain AI inference worker (Groq)
 ├── src/
-│   ├── app/                 # Next.js App Router (Frontend + API Routes)
-│   │   ├── query/           # Query Maker UI flows (Create, Status tracking)
-│   │   ├── provider/        # AI Provider Dashboard UI
-│   │   └── api/             # Backend API for syncing off-chain metadata
-│   ├── components/          # Reusable UI components (shadcn/ui)
-│   ├── contexts/            # React Contexts (Wallet connection state)
-│   └── lib/                 # Utility functions (crypto, DB client)
-├── scripts/                 # Admin scripts (e.g., deploying the contract)
-└── .github/workflows/       # CI/CD pipelines (Lint, Typecheck, Smart Contract Build)
+│   ├── app/
+│   │   ├── page.tsx            # Landing page (hero, FAQ, footer)
+│   │   ├── admin/page.tsx      # Admin ops dashboard (4 tabs)
+│   │   ├── history/page.tsx    # Query history for connected wallet ← NEW
+│   │   ├── query/new/          # Query submission UI
+│   │   ├── query/[id]/         # Query status + ZK result UI
+│   │   ├── provider/           # AI Provider dashboard
+│   │   └── api/                # REST API routes
+│   ├── components/
+│   │   └── Header.tsx          # Sticky header with wallet connect + nav
+│   ├── contexts/
+│   │   └── WalletContext.tsx   # Wallet state management
+│   └── lib/                    # Shared utilities (DB, Redis, crypto)
+├── public/
+│   ├── logo.png                # PrivateInfer logo
+│   └── zk/privateinfer/        # Compiled ZK proving/verifying keys
+├── FEEDBACK.md                 # Beta tester feedback + implemented changelog
+├── SETUP.md                    # Local development setup
+└── .github/workflows/          # CI/CD (Typecheck, Frontend, Contracts)
 ```
 
 ---
 
 ## 🧪 Testing
 
-The project uses **Jest** for robust unit testing of our core cryptographic and parsing logic. We've ensured that sensitive operations (like parsing 1AM Wallet public keys into Uint8Array byte buffers for the ZK circuits) are 100% reliable and edge-case secure.
+Jest unit tests cover core cryptographic logic — including the `coinPublicKeyToBytes` conversion that transforms 1AM Wallet public keys into `Uint8Array` buffers for use in ZK circuits.
 
-**To run the test suite locally:**
-`ash
+```bash
 npm install
 npm test
-`
+```
+
+```bash
+# TypeScript check
+npm run typecheck
+
+# Production build
+npm run build
+```
 
 <img src="assets/test.png" alt="Test Cases Passing" width="600"/>
 
 ---
 
-## 🚀 Future Implementations & Real-World Application
+## 📝 User Feedback & Beta Testing
 
-### Real-World Applications
-1. **Medical AI:** Hospitals can use PrivateInfer to get AI-driven diagnoses on highly sensitive patient records without violating HIPAA. The ZK-proof guarantees the AI didn't hallucinate the result, and the privacy guarantees the data wasn't leaked.
-2. **Proprietary Financial Modeling:** Hedge funds can run complex algorithmic trading models securely on decentralized computing networks without exposing their alpha-generating strategies.
-3. **Enterprise Intellectual Property:** Law firms and tech giants can summarize confidential contracts or source code without handing their IP over to centralized cloud providers.
+**70 verified beta testers** participated across the Midnight PREPROD testing phase (September 12–22, 2026), recruited via Discord and Telegram. All testers used the **1AM Wallet** on the **Midnight PREPROD network**. Each wallet address is verifiable on the [1AM Explorer](https://explorer.1am.xyz/?network=preprod).
 
-### Future Enhancements
-* **Dynamic ZK-VM Integration:** Integrating a complete Zero-Knowledge Virtual Machine so the provider can prove the *entirety* of an LLM execution trace.
-* **Reputation System:** Implementing an on-chain staking and slashing mechanism for providers who consistently fail to submit results within a given timeframe.
-* **Multiparty Computation (MPC):** Splitting the AI inference across multiple nodes for even higher security guarantees.
+| Resource | Description | Link |
+|---|---|---|
+| **Feedback Form** | Google Form used to collect structured tester feedback during the beta | [forms.gle/nYS9vPbCfWTQgKk56](https://forms.gle/nYS9vPbCfWTQgKk56) |
+| **Response Sheet** | All 70 raw form responses with ratings, comments, timestamps, and wallet addresses | [Google Sheets ↗](https://docs.google.com/spreadsheets/d/1gRTG3rp0X3FshsP7X_0es1nJLm_Wq1l7s2-H4UdWr5k/edit?usp=sharing) |
+| **Verified Testers** | Full directory of 70 testers — name, PREPROD wallet address, and 1AM Explorer verification link for each | [docs/USERS.md](docs/USERS.md) |
+| **Feedback Changelog** | Raw tester feedback with real wallet addresses + every implemented change linked to its git commit ID | [FEEDBACK.md](FEEDBACK.md) |
+
+### Changes Shipped Directly from Beta Feedback
+
+| Feedback | From | Commit |
+|---|---|---|
+| Added copy button to AI result output | Manash Koley | [`e3a4a9c`](https://github.com/debansh001/PrivateInfer/commit/e3a4a9c) |
+| Processing spinner + "do not refresh" message | Rubina Mondal | [`e3a4a9c`](https://github.com/debansh001/PrivateInfer/commit/e3a4a9c) |
+| Explorer hint redesigned as red `🚨 ATTENTION` banner | Faisal Islam | [`e3a4a9c`](https://github.com/debansh001/PrivateInfer/commit/e3a4a9c) |
+| Light/dark theme toggle fully fixed | Habibullah Mir | [`94c8b69`](https://github.com/debansh001/PrivateInfer/commit/94c8b69) |
+| Connect Wallet button actually connects (was just a link) | Multiple testers | [`54acd1b`](https://github.com/debansh001/PrivateInfer/commit/54acd1b) |
+| Lace Wallet error toast with PREPROD-only guidance | Priya Das | [`54acd1b`](https://github.com/debansh001/PrivateInfer/commit/54acd1b) |
+| **Query history page `/history`** | Fatima Khatun | [`659cc93`](https://github.com/debansh001/PrivateInfer/commit/659cc93) |
+
+---
+
+## 🚀 Future Roadmap
+
+| Feature | Status |
+|---|---|
+| Query history page (`/history`) | ✅ Shipped |
+| Auto-submit script for provider nodes | ⏳ Planned |
+| AI model selection dropdown (Medical / Legal / General) | ⏳ Planned |
+| Lace Wallet full support | ⏳ Planned |
+| On-chain provider reputation / staking | 🔭 Research |
+| Dynamic ZK-VM for full LLM execution trace | 🔭 Research |
+| Multiparty Computation (MPC) inference | 🔭 Research |
 
 ---
 
 ## 🙏 Salutation
 
-**A massive thank you to the Midnight Network team!** 
-The ability to seamlessly blend public state verification with private local execution using compact is game-changing. This platform allowed us to build an enterprise-grade privacy product that would be completely impossible on traditional blockchains. Thank you for building the future of data protection! 💜
+**A massive thank you to the Midnight Network team!**
+The ability to seamlessly blend public state verification with private local execution using Compact is game-changing. This platform allowed us to build an enterprise-grade privacy product that would be completely impossible on traditional blockchains. Thank you for building the future of data protection! 💜
