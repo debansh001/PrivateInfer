@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *), .dark &);
 
 @theme inline {
   --color-background: var(--background);
@@ -30,33 +30,64 @@
   --radius-lg: var(--radius);
 }
 
-:root, .dark {
-  /* PrivateInfer Identity */
+/* ===== LIGHT THEME (default when no class applied) ===== */
+:root {
+  --background: #F8F9FC;
+  --foreground: #0D1117;
+
+  --surface: #FFFFFF;
+  --surface-raised: #F0F2F8;
+
+  --accent-primary: #6C5CE7;
+  --accent-verified: #00A896;
+
+  --primary: #0D1117;
+  --primary-foreground: #FFFFFF;
+
+  --muted: #EEF0F7;
+  --muted-foreground: #5A6275;
+
+  --accent: #EEF0F7;
+  --accent-foreground: #0D1117;
+
+  --card: #FFFFFF;
+  --card-foreground: #0D1117;
+
+  --border: #DDE1EE;
+  --input: #EEF0F7;
+  --ring: #6C5CE7;
+
+  --radius: 0.5rem;
+}
+
+/* ===== DARK THEME (.dark class applied by next-themes on <html>) ===== */
+html.dark,
+.dark {
   --background: #0B0E17;
   --foreground: #F4F5F9;
-  
+
   --surface: #141827;
   --surface-raised: #1C2136;
-  
+
   --accent-primary: #8B7FF5;
   --accent-verified: #4FD1C5;
-  
+
   --primary: #F4F5F9;
   --primary-foreground: #0B0E17;
-  
+
   --muted: #141827;
   --muted-foreground: #8B90A6;
-  
+
   --accent: #1C2136;
   --accent-foreground: #F4F5F9;
-  
+
   --card: #141827;
   --card-foreground: #F4F5F9;
-  
-  --border: #1C2136;
+
+  --border: #252D44;
   --input: #1C2136;
   --ring: #8B7FF5;
-  
+
   --radius: 0.5rem;
 }
 

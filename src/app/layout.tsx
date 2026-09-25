@@ -33,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
-      <body className="antialiased min-h-screen bg-background text-primary font-sans flex flex-col">
+      <body className="antialiased min-h-screen bg-background text-foreground font-sans flex flex-col">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <WalletProvider>
             <Header />
