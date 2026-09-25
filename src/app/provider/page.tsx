@@ -13,8 +13,10 @@ import { useWallet } from "@/contexts/WalletContext";
 import { createUnprovenCallTx, submitTxAsync } from '@midnight-ntwrk/midnight-js-contracts';
 import { CompiledContract } from '@midnight-ntwrk/compact-js';
 
-// @ts-expect-error Types mismatch for keys in different Midnight SDK versions
-// @ts-expect-error Types mismatch for keys in different Midnight SDK versions
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore Types mismatch for keys in different Midnight SDK versions
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore Types mismatch for keys in different Midnight SDK versions
 import { Contract } from '../../../contracts/managed/privateinfer/contract/index.js';
 
 function coinPublicKeyToBytes(pk: string | Uint8Array): Uint8Array {
@@ -67,8 +69,10 @@ export default function ProviderDashboard() {
   }, [isConnected, session]);
 
   const getCompiledContract = (pkBytes: Uint8Array) => {
-    // @ts-ignore - Contract type mismatch in CI
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - Contract type mismatch in CI
     return CompiledContract.make('privateinfer', Contract).pipe(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore - Witnesses type mismatch in CI
       CompiledContract.withWitnesses({
         callerAddress: (context: any) => [context.state, pkBytes]

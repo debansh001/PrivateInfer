@@ -423,8 +423,10 @@ function DeployTab() {
   const [deploying, setDeploying] = useState(false);
 
   const getCompiledContract = () => {
-    // @ts-ignore - Contract type mismatch in CI
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - Contract type mismatch in CI
     return CompiledContract.make("privateinfer", Contract).pipe(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore - Witnesses type mismatch in CI
       CompiledContract.withWitnesses({
         callerAddress: (context: any) => [context.state, new Uint8Array(32)],
