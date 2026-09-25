@@ -206,8 +206,19 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
                 <CardContent className="pt-6">
                   {decryptedData && (
                     <div className="bg-primary/5 rounded-md p-4 border border-primary/20 mb-6">
-                      <div className="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
-                        <span>✨ Decrypted AI Output</span>
+                      <div className="text-sm font-semibold text-primary mb-2 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span>✨ Decrypted AI Output</span>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(decryptedData);
+                            toast.success("Result copied to clipboard!");
+                          }}
+                          className="text-xs bg-primary/10 hover:bg-primary/20 px-2 py-1 rounded transition-colors"
+                        >
+                          Copy
+                        </button>
                       </div>
                       <div className="text-sm leading-relaxed text-foreground">
                         {decryptedData}

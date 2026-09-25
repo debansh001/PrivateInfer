@@ -158,8 +158,8 @@ export default function SubmitQueryPage() {
             <CardDescription className="text-base mt-2">
               Your query has been encrypted and a dedicated smart contract has been deployed on the Midnight Preview network.
             </CardDescription>
-            <div className="bg-muted text-muted-foreground p-3 rounded-md text-sm mt-4 text-left border border-border">
-              💡 <strong>How to verify on-chain:</strong> The Midnight SDK does not return the raw transaction hash directly. To view this on the Midnight Explorer, open your <strong>1AM Wallet extension</strong>, go to the <strong>Transactions</strong> tab, click your recent "DApp" transaction, copy the Hash, and paste it into the Midnight Explorer search bar!
+            <div className="bg-red-500/10 text-red-400 p-4 rounded-md text-sm mt-4 text-left border border-red-500/20 shadow-sm shadow-red-500/10">
+              🚨 <strong>ATTENTION: How to verify on-chain:</strong> The Midnight SDK does not return the raw transaction hash directly. To view this on the Midnight Explorer, open your <strong>1AM Wallet extension</strong>, go to the <strong>Transactions</strong> tab, click your recent "DApp" transaction, copy the Hash, and paste it into the Midnight Explorer search bar!
             </div>
           </CardHeader>
           <CardContent className="space-y-4 pt-4 pb-8">
@@ -228,8 +228,8 @@ export default function SubmitQueryPage() {
             )}
             {isProcessing && (
               <div className="p-4 rounded-md bg-background border border-border flex items-center gap-3 text-sm text-muted-foreground animate-pulse">
-                <Lock className="w-4 h-4 text-accent-primary" />
-                <span className="font-mono">Compiling ZK proof and waiting for 1AM Wallet signature...</span>
+                <div className="w-4 h-4 border-2 border-accent-primary border-t-transparent rounded-full animate-spin"></div>
+                <span className="font-mono">Compiling ZK proof and waiting for Wallet signature... (Please do not refresh)</span>
               </div>
             )}
           </CardContent>
