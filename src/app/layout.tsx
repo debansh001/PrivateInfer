@@ -24,6 +24,14 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "PrivateInfer | Confidential AI Inference",
   description: "A Confidential AI Inference Marketplace on Midnight",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
