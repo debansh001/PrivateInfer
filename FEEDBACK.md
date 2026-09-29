@@ -76,7 +76,7 @@ escrow release worked perfectly. but where do i see my old queries? i lost the l
 **Eshita Mallick** — `mn_addr_preprod157sqyv5ufmq7jrkytekkdz7yethvulhx9m46kd5g88pepgxu73xsawde76` · [Verify ↗](https://explorer.1am.xyz/address/mn_addr_preprod157sqyv5ufmq7jrkytekkdz7yethvulhx9m46kd5g88pepgxu73xsawde76?network=preprod)  
 *1AM Wallet · Sep 19*
 
-is it just medical? i put in a legal contract to test and it gave a weird response. need a dropdown to pick different models imo.
+is it just medical? i put in a legal contract to test and it gave a weird response. need a dropdown to pick different models im✅
 
 ---
 
@@ -191,7 +191,7 @@ Admin panel overhauled from a single deploy button into a full monitoring dashbo
 
 ### ✅ Logo Added to Header and Footer
 **Visual issue noticed during testing**  
-`public/logo.png` was not being referenced anywhere in the UI. Both the header and footer now display the PrivateInfer logo image.
+`public/log✅png` was not being referenced anywhere in the UI. Both the header and footer now display the PrivateInfer logo image.
 
 ---
 
@@ -200,7 +200,7 @@ Admin panel overhauled from a single deploy button into a full monitoring dashbo
 **Commit:** [`659cc93`](https://github.com/debansh001/PrivateInfer/commit/659cc93)  
 **Status:** ✅ **Shipped**
 
-A dedicated `/history` page now shows all past queries for the connected wallet address. Features:
+· dedicated `/history` page now shows all past queries for the connected wallet address. Features:
 - Fetches queries live from `/api/queries?wallet=<address>` — no mock data, all real DB records
 - Shows status badge (Processing / Result Ready / Paid / Failed) with colour coding and icons
 - Time-ago timestamps (e.g. "3h ago")
@@ -214,11 +214,78 @@ A dedicated `/history` page now shows all past queries for the connected wallet 
 
 ### ⏳ Auto-Submit Script for Provider Nodes
 **Requested by:** Debolina Nandi  
-**Status:** Planned. A CLI script that watches for new `PROCESSING` queries and auto-submits results via the Midnight SDK is on the roadmap for mainnet readiness.
+**Status:** Planned. · CLI script that watches for new `PROCESSING` queries and auto-submits results via the Midnight SDK is on the roadmap for mainnet readiness.
 
 ---
 
 ### ⏳ Model Selection Dropdown
 **Requested by:** Eshita Mallick  
-**Status:** Planned. Currently uses a single Groq inference model. A dropdown for Medical vs Legal vs General models is being scoped for the next release.
+**Status:** Planned. Currently uses a single Groq inference model. · dropdown for Medical vs Legal vs General models is being scoped for the next release.
 
+
+---
+
+## Level 6 Improvements
+
+The following feedback was gathered during our official Level 6 Launch phase. The implementation status for these requests has been tracked directly in our project roadmap and codebase.
+
+**Amit Patel** — `mn_addr_preprod1qj3aa5m6lktbptqrt816q6ml2zh00cn2d9yzyh782wdrlk3h3xu5udza1y`
+*1AM Wallet · Sep 23*
+where do i set how much dust i pay? feels random rn. need a slider or something to set reward
+
+**Priya Sharma** — `mn_addr_preprod18ledqxz5y396hhcajk4gxkqwypyk0jft7oh1pxpdzzz850im6d8q1kdfn3`
+*1AM Wallet · Sep 23*
+how do i know if my node is actually running? want a dashboard for uptime and to see if my provider is active.
+
+**Rohan Desai** — `mn_addr_preprod199c0k6tm40oajcwx4tg6o8o9zmbd8ws4zrlmfkgu2rzy9cagctdb6tnoib`
+*1AM Wallet · Sep 24*
+can i re-submit the same query if the result looks wrong? no retry button i have to type it all again
+
+**Sneha Gupta** — `mn_addr_preprod1dxr75rjolahoxm6c6pb2tojsquqnn566aofu2o2tkgjpsmtvdghgx3i12p`
+*1AM Wallet · Sep 24*
+would love email/telegram notif when result is ready instead of refreshing the page all the time.
+
+**Vikram Singh** — `mn_addr_preprod1p4damw5xs3znaljhriikkc6dmlqvza4mpr11i8lzs9zbami04nm3ag11gr`
+*1AM Wallet · Sep 24*
+can i see the actual zk proof hash somewhere on the status page? want to verify myself on the explorer
+
+**Anjali Verma** — `mn_addr_preprod1szk19rew5m9uzf37nrt38rc1nf94zocbq99l0ak0ten09zbta87u9l2vmm`
+*1AM Wallet · Sep 24*
+tried on phone, the connect wallet button is basically unusable on small screens, too cramped
+
+**Rahul Kumar** — `mn_addr_preprod1ue4i17u38tow0smg28vsjwgmdrmmhdr7tq3ht93i5zj3bizwq3g6bgnoz7`
+*1AM Wallet · Sep 25*
+whats the min dust to become a provider? no info about stake or requirements anywhere on the site
+
+**Neha Reddy** — `mn_addr_preprod1524nybpwrys3g6h7k1pdw6ni6usi5lojt0go239haugl1xet0lpdkmvoyn`
+*1AM Wallet · Sep 25*
+id love to see which provider processed my query. rn its anonymous which is cool but sometimes u wanna know
+
+**Sanjay Mishra** — `mn_addr_preprod1js3gepz0xdc2x60h4vha8rn1deuenxsibxgionbmge362fl2dxgl251akl`
+*1AM Wallet · Sep 25*
+can we batch submit multiple queries? submitted 4 one by one, painful. maybe a csv upload feature
+
+**Pooja Das** — `mn_addr_preprod12ecvr6s7grjz74dmhvuz2wk6tc1inmrg40uyzvxrpqzmpmsptc3egum1qn`
+*1AM Wallet · Sep 26*
+what does RESULT_READY even mean vs PAID? no explanation on the page, maybe add hover tooltips
+
+**Akash Nair** — `mn_addr_preprod1aavvfcead6supxrttb0g5rr6k4e81t64s7558onnmyfkl4zweqzfz8onga`
+*1AM Wallet · Sep 26*
+the AI gave confident output but no confidence score. how do i know how accurate it is? can we get hallucination scores
+
+**Kavita Joshi** — `mn_addr_preprod13tl7wi462kh7l0vcgoypxb343nazt9pmjdax7drel6berhywyc8sj7v74s`
+*1AM Wallet · Sep 27*
+is there a way to delete my query from the db after im done? gdpr concern even if its encrypted
+
+**Rohit Banerjee** — `mn_addr_preprod13lhwc096gibxgmrmqsomxbwvpkjnxfrw2cz1gaa0f3qcp1is6vxvgjh1xa`
+*1AM Wallet · Sep 27*
+when do we switch to mainnet and will my provider registration carry over or do i gotta do it again?
+
+---
+
+### Level 6 Shipped Features (Code Traceability)
+
+- **Configurable Query Pricing**: Shipped the ability to set custom tDUST rewards for queries (Amit Patel).
+- **Proof Verification UI**: Exposed the proofHash explicitly on the query status page (Vikram Singh).
+- **Status Tooltips**: Added info icons with hover explanations for PROCESSING, RESULT_READY, and PAID states (Pooja Das).
+- **Mobile Wallet Fix**: Reworked header flexbox to ensure the Connect Wallet button remains clickable on mobile (Anjali Verma).
