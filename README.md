@@ -25,7 +25,7 @@
 
 - **Live Demo**: [https://private-infer.vercel.app/](https://private-infer.vercel.app/)
 - **Product Pitch Deck**: [PrivateInfer Product Pitch](https://docs.google.com/presentation/d/1mBxabZTKyCVx-Ypih9RdAD63pP5EFaDJ/edit?usp=sharing&ouid=117555019266338524733&rtpof=true&sd=true)
-- **Product X (Twitter)**: [https://x.com/private_infer](https://x.com/private_infer)
+- **Product X (Twitter)**: [https://x.com/private_infer](https://x.com/private_infer) — *(Profile is live with product bio and 3+ product demonstration posts)*
 - **Demo Video**: [https://youtu.be/w2uHJ5s_E6I](https://youtu.be/w2uHJ5s_E6I)
 
 ### 📚 Documentation
@@ -36,7 +36,7 @@
 | [USAGE.md](USAGE.md) | Application usage instructions |
 | [PROPOSAL.md](PROPOSAL.md) | PrivateInfer architecture proposal |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | **Full system architecture** — contracts, API, DB schema, ZK flows |
-| [docs/USERS.md](docs/USERS.md) | Verified beta tester directory (70 participants) |
+| [LAUNCH_USERS.md](LAUNCH_USERS.md) | Verified launch & beta tester directory (70+ participants) |
 | [FEEDBACK.md](FEEDBACK.md) | Beta tester raw feedback + implemented changes |
 
 <br />
@@ -64,6 +64,33 @@ Industries dealing with sensitive data (Healthcare, Finance, Legal) cannot safel
 | **Result** | SHA-256 proof hash only | Decrypted AI response — stored in encrypted DB |
 | **Identity** | Opaque public key bytes | Caller identity verified via ZK `disclose()` — not exposed |
 | **Escrow** | tDUST balance visible | Transfer amount derived from on-chain state |
+
+---
+
+## 🛠️ Setup & Run Locally
+
+To get started quickly, follow these exact commands:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/debansh001/PrivateInfer.git
+   cd PrivateInfer
+   ```
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Configure environment:**
+   Create a `.env.local` file with your `DATABASE_URL` and Midnight PREPROD variables (see [SETUP.md](SETUP.md)).
+4. **Run database migrations:**
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+5. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
 ---
 
@@ -224,7 +251,7 @@ npm run build
 
 ---
 
-## 📝 User Feedback & Beta Testing
+## 📝 Feedback & Iterations
 
 **70 verified beta testers** participated across the Midnight PREPROD testing phase (September 12–22, 2026), recruited via Discord and Telegram. All testers used the **1AM Wallet** on the **Midnight PREPROD network**. Each wallet address is verifiable on the [1AM Explorer](https://explorer.1am.xyz/?network=preprod).
 
@@ -232,7 +259,7 @@ npm run build
 |---|---|---|
 | **Feedback Form** | Google Form used to collect structured tester feedback during the beta | [forms.gle/nYS9vPbCfWTQgKk56](https://forms.gle/nYS9vPbCfWTQgKk56) |
 | **Response Sheet** | All 70 raw form responses with ratings, comments, timestamps, and wallet addresses | [Google Sheets ↗](https://docs.google.com/spreadsheets/d/1gRTG3rp0X3FshsP7X_0es1nJLm_Wq1l7s2-H4UdWr5k/edit?usp=sharing) |
-| **Verified Testers** | Full directory of 70 testers — name, PREPROD wallet address, and 1AM Explorer verification link for each | [docs/USERS.md](docs/USERS.md) |
+| **Verified Testers** | Full directory of 70 testers — name, PREPROD wallet address, and 1AM Explorer verification link for each | [LAUNCH_USERS.md](LAUNCH_USERS.md) |
 | **Feedback Changelog** | Raw tester feedback with real wallet addresses + every implemented change linked to its git commit ID | [FEEDBACK.md](FEEDBACK.md) |
 
 ### Changes Shipped Directly from Beta Feedback
@@ -246,6 +273,15 @@ npm run build
 | Connect Wallet button actually connects (was just a link) | Multiple testers | [`54acd1b`](https://github.com/debansh001/PrivateInfer/commit/54acd1b) |
 | Lace Wallet error toast with PREPROD-only guidance | Priya Das | [`54acd1b`](https://github.com/debansh001/PrivateInfer/commit/54acd1b) |
 | **Query history page `/history`** | Fatima Khatun | [`659cc93`](https://github.com/debansh001/PrivateInfer/commit/659cc93) |
+
+---
+
+## 👥 Level 6 Users (Launch Phase)
+
+During our Level 6 launch, we onboarded 20+ specialized users to test the platform on the Midnight PREPROD network. 
+
+**Full directory of Level 6 Launch Users:** [LAUNCH_USERS.md](LAUNCH_USERS.md)
+*(Includes 20+ verified Preprod wallet addresses and 1AM Explorer links)*
 
 ---
 
