@@ -116,7 +116,7 @@ async function main() {
       await prisma.query.update({
         where: { id: queryId },
         data: {
-          status: "RESULT_READY",
+          status: "PROCESSING", // Keep it PROCESSING until the Provider UI submits it on-chain
           commitmentHash: resultHash,
           ...(!existing && {
             result: {

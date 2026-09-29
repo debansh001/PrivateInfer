@@ -51,6 +51,18 @@ export async function PATCH(
       return NextResponse.json({ error: "Invalid status value" }, { status: 400 });
     }
 
+    if (body.status === "RESULT_READY") {
+      const providerWallet = req.headers.get("x-provider-wallet");
+      if (!providerWallet) {
+        return NextResponse.json({ error: "Unauthorized: Missing Provider Wallet Signature" }, { status: 401 });
+      }
+      
+      const isProvider = await sql`SELECT id FROM "Provider" WHERE "modelHash" = ${providerWallet} LIMIT 1`;
+      if (isProvider.length === 0) {
+        return NextResponse.json({ error: "Unauthorized: Wallet is not a registered Provider" }, { status: 403 });
+      }
+    }
+
     if (body.status) {
       await sql`UPDATE "Query" SET status = ${body.status}::"QueryStatus", "updatedAt" = NOW() WHERE id = ${id}`;
 
