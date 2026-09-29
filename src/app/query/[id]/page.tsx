@@ -208,7 +208,7 @@ export default function QueryStatusPage({ params }: { params: Promise<{ id: stri
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-6">
-                  {decryptedData && (status === "RESULT_READY" || status === "PAID") ? (
+                  {decryptedData && (
                     <div className="bg-primary/5 rounded-md p-4 border border-primary/20 mb-6">
                       <div className="text-sm font-semibold text-primary mb-2 flex items-center justify-between">
                         <div className="flex items-center gap-2">
